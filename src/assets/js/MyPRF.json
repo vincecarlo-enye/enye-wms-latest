@@ -1,0 +1,82 @@
+[
+  {
+    "prfNo": "PRF-2026-0001",
+    "requestedBy": "Juan Dela Cruz",
+    "clientName": "ABC Construction Corp.",
+    "project": "Skyline Tower Project",
+    "poNo": "PO-45871",
+    "status": "PENDING PRF"
+  },
+  {
+    "prfNo": "PRF-2026-0002",
+    "requestedBy": "Maria Santos",
+    "clientName": "Global Tech Solutions",
+    "project": "IT Infrastructure Upgrade",
+    "poNo": "PO-45872",
+    "status": "NOTED PRF"
+  },
+  {
+    "prfNo": "PRF-2026-0003",
+    "requestedBy": "Carlos Ramirez",
+    "clientName": "Prime Holdings Inc.",
+    "project": "Warehouse Expansion",
+    "poNo": "PO-45873",
+    "status": "APPROVED PRF"
+  },
+  {
+    "prfNo": "PRF-2026-0004",
+    "requestedBy": "Angela Reyes",
+    "clientName": "Metro Logistics",
+    "project": "Fleet Modernization",
+    "poNo": "PO-45874",
+    "status": "DISAPPROVED PRF"
+  },
+  {
+    "prfNo": "PRF-2026-0005",
+    "requestedBy": "Mark Villanueva",
+    "clientName": "Sunrise Builders",
+    "project": "Residential Phase 2",
+    "poNo": "PO-45875",
+    "status": "CHECKED PRF"
+  },
+  {
+    "prfNo": "PRF-2026-0006",
+    "requestedBy": "Samantha Lee",
+    "clientName": "Northwind Enterprises",
+    "project": "Retail Store Renovation",
+    "poNo": "PO-45876",
+    "status": "RETURNED PRF"
+  },
+  {
+    "prfNo": "PRF-2026-0007",
+    "requestedBy": "Daniel Cruz",
+    "clientName": "Vertex Engineering",
+    "project": "Bridge Rehabilitation",
+    "poNo": "PO-45877",
+    "status": "RELEASED PRF"
+  },
+  {
+    "prfNo": "PRF-2026-0008",
+    "requestedBy": "Patricia Gomez",
+    "clientName": "Blue Ocean Shipping",
+    "project": "Port Equipment Upgrade",
+    "poNo": "PO-45878",
+    "status": "RECEIVED PRF"
+  },
+  {
+    "prfNo": "PRF-2026-0009",
+    "requestedBy": "Kevin Tan",
+    "clientName": "Evergreen Manufacturing",
+    "project": "Production Line Expansion",
+    "poNo": "PO-45879",
+    "status": "CANCELED PRF"
+  },
+  {
+    "prfNo": "PRF-2026-0010",
+    "requestedBy": "Liza Fernandez",
+    "clientName": "Urban Developments Ltd.",
+    "project": "City Mall Construction",
+    "poNo": "PO-45880",
+    "status": "APPROVED PRF"
+  }
+]

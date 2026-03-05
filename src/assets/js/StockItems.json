@@ -1,0 +1,62 @@
+[
+  {
+    "id": 42,
+    "modelName": "TE-NND-A",
+    "description": "Wall mounted Temp sensor 10k ohm type 3 sensor",
+    "quantity": 5,
+    "manufacturer": "DWYER",
+    "buyingPrice": 12.9,
+    "totalBuyingPrice": 64.5,
+    "category": "IMPORTED MATERIALS"
+  },
+  {
+    "id": 45,
+    "modelName": "TEM",
+    "description": "PI modulating controller surface mounted 1 AO w/ enye logo",
+    "quantity": 4,
+    "manufacturer": "VECTOR",
+    "buyingPrice": 23.2,
+    "totalBuyingPrice": 92.8,
+    "category": "LOCAL MATERIALS"
+  },
+  {
+    "id": 46,
+    "modelName": "TCI-W22-U",
+    "description": "PI Controller, Wall flush mounted int TI, 2 UI, 1 AO, 2DO (Relays), w/ enye logo.",
+    "quantity": 34,
+    "manufacturer": "VECTOR",
+    "buyingPrice": 39.0,
+    "totalBuyingPrice": 1326.0,
+    "category": "MOCK-UP MATERIALS"
+  },
+  {
+    "id": 50,
+    "modelName": "TCX2-40863-OP-BAC",
+    "description": "EC Universal Controller with 4 loops 8 UI, 6DO and 3AO Bacnet Ready",
+    "quantity": 1,
+    "manufacturer": "VECTOR",
+    "buyingPrice": 108.8,
+    "totalBuyingPrice": 108.8,
+    "category": "NON MOVING IMPORTED MATERIALS"
+  },
+  {
+    "id": 52,
+    "modelName": "TLC3-FCR-T-U-D-230-W01",
+    "description": "Fan Coil Thermostat(v2.3 r4) w/ enye logo",
+    "quantity": 35,
+    "manufacturer": "VECTOR",
+    "buyingPrice": 30.3,
+    "totalBuyingPrice": 1060.5,
+    "category": "NON MOVING LOCAL MATERIALS"
+  },
+  {
+    "id": 62,
+    "modelName": "LM24A-S",
+    "description": "1 or 2 wire control with 1 aux switch feedback 24V",
+    "quantity": 5,
+    "manufacturer": "BELIMO",
+    "buyingPrice": 42.75,
+    "totalBuyingPrice": 213.75,
+    "category": "TOOLS"
+  }
+]

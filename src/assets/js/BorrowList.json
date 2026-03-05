@@ -1,0 +1,55 @@
+{
+  "borrowList": [
+    {
+      "srfNo": "2023-355-e",
+      "intendedFor": "Sample",
+      "usedFor": "Testing",
+      "borrowedDate": "2023-09-13",
+      "returnedOn": "2023-09-15",
+      "status": "Returned",
+      "itemType": "LOCAL MATERIALS",
+      "signature": {
+        "requestedBy": "Admin Enye",
+        "notedBy": "Immediate Supervisor",
+        "approvedByDeptManager": "Department Manager",
+        "receivedByPLLogistics": "Logistics",
+        "approvedByPLManager": "Logistics Manager",
+        "releasedReservedBy": "Logistics",
+        "receivedByEmployee": "Employee"
+      },
+      "items": [
+        { "productName": "Sample Item", "barcode": "00000001", "quantity": 1, "uom": "pc", "notes": "" }
+      ]
+    },
+    {
+      "srfNo": "2023-356-e",
+      "intendedFor": "Project Alpha",
+      "usedFor": "Installation",
+      "borrowedDate": "2023-09-18",
+      "returnedOn": "",
+      "status": "Borrowed",
+      "itemType": "IMPORTED MATERIALS",
+      "signature": {
+        "requestedBy": "Admin Enye",
+        "notedBy": "Immediate Supervisor",
+        "approvedByDeptManager": "Department Manager",
+        "receivedByPLLogistics": "Logistics",
+        "approvedByPLManager": "Logistics Manager",
+        "releasedReservedBy": "Logistics",
+        "receivedByEmployee": "Employee"
+      },
+      "items": [
+        { "productName": "Project Item", "barcode": "00000002", "quantity": 1, "uom": "pc", "notes": "" }
+      ]
+    }
+  ],
+  "filteredProducts": [
+    { "productName": "DRILL BIT 5/32\"", "barcode": "04188095", "stock": 10, "brand": "DORMER" },
+    { "productName": "DRILL BIT 5/32\"", "barcode": "11182268", "stock": 4, "brand": "DORMER" },
+    { "productName": "DRILL BIT 5/32\"", "barcode": "06221355", "stock": 14, "brand": "DORMER" },
+    { "productName": "PLATE MVD 6 40MM X 20MM", "barcode": "08254303", "stock": 2, "brand": "LOCAL" },
+    { "productName": "PILOT LAMP 22OV GREEN", "barcode": "03183146", "stock": 160, "brand": "CHINA" },
+    { "productName": "RVHX-0080C", "barcode": "05237433", "stock": 5, "brand": "CONEX BANNINGER" },
+    { "productName": "ANSI CLASS150-DN250", "barcode": "02188176", "stock": 194, "brand": "CHINA" }
+  ]
+}

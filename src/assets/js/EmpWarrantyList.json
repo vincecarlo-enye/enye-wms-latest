@@ -1,0 +1,206 @@
+[
+  {
+    "srfNo": "2020-008",
+    "requestedBy": "Maureen Joy Jontilano",
+    "itemType": "Local Item/s",
+    "clientName": "FRM",
+    "refNo": "3592",
+    "projectName": "BPI",
+    "drNo": "1588",
+    "date": "2020-01-14",
+    "type": "Disapproved by Manager",
+    "status": "Disapproved by Manager",
+    "items": [
+      { "productName": "ANSI CLASS150-DN150", "barcode": "02183781", "stock": 590, "uom": "pcs", "notes": "" }
+    ]
+  },
+  {
+    "srfNo": "2020-021",
+    "requestedBy": "Maureen Joy Jontilano",
+    "itemType": "Imported Item/s",
+    "clientName": "BUILDING BLOCKS",
+    "refNo": "19-1189",
+    "projectName": "POLAND EMBASSY",
+    "drNo": "N/A",
+    "date": "2020-01-28",
+    "type": "Reserved/Released by Logistics",
+    "status": "Reserved/Released by Logistics",
+    "items": [
+      {
+    "productName": "PLATE SKID TANK 1 LOW",
+    "barcode": "09243040",
+    "stock": 4,
+    "requestQty": 1,
+    "brand": "LOCAL"
+  }
+    ]
+  },
+  {
+    "srfNo": "2020-034",
+    "requestedBy": "Maureen Joy Jontilano",
+    "itemType": "Local Item/s",
+    "clientName": "TEMPLINK",
+    "refNo": "3377",
+    "projectName": "SM KEPPEL",
+    "drNo": "N/A",
+    "date": "2020-02-28",
+    "type": "Approved by Manager",
+    "status": "Approved by Manager",
+    "items": [
+      {
+    "productName": "RELAY SOCKET (HORIZONTAL LEGS)",
+    "barcode": "03183989",
+    "stock": 414,
+    "requestQty": 1,
+    "brand": "OMRON"
+  }
+    ]
+  },
+  {
+    "srfNo": "2020-043",
+    "requestedBy": "Maureen Joy Jontilano",
+    "itemType": "Imported Item/s",
+    "clientName": "CITIAIRE",
+    "refNo": "39888",
+    "projectName": "KASARA",
+    "drNo": "N/A",
+    "date": "2020-03-13",
+    "type": "Pending",
+    "status": "Pending",
+    "items": [
+      {
+    "productName": "EC-UBM-050",
+    "barcode": "12245844",
+    "stock": 1,
+    "requestQty": 1,
+    "brand": "BASIC CONTROLS"
+  }
+    ]
+  },
+  {
+    "srfNo": "2020-044",
+    "requestedBy": "Maureen Joy Jontilano",
+    "itemType": "Imported Item/s",
+    "clientName": "SALEMAIRE",
+    "refNo": "9379",
+    "projectName": "BPLAC",
+    "drNo": "N/A",
+    "date": "2020-03-17",
+    "type": "Pending",
+    "status": "Pending",
+    "items": [
+     {
+    "productName": "PLATE ELEV. PIT WATER LEVEL 80MM X 20MM",
+    "barcode": "12244032",
+    "stock": 9,
+    "requestQty": 1,
+    "brand": "LOCAL"
+  }
+    ]
+  },
+  {
+    "srfNo": "2020-056",
+    "requestedBy": "Maureen Joy Jontilano",
+    "itemType": "Imported Item/s",
+    "clientName": "HOLIDAY INN",
+    "refNo": "PO202002-01948",
+    "projectName": "HOLIDAY INN",
+    "drNo": "N/A",
+    "date": "2020-06-24",
+    "type": "Approved by Manager",
+    "status": "Approved by Manager",
+    "items": [
+       {
+    "productName": "PLATE MVD 5 40MM X 20MM",
+    "barcode": "08258692",
+    "stock": 2,
+    "requestQty": 1,
+    "brand": "LOCAL"
+  }
+    ]
+  },
+  {
+    "srfNo": "2020-076",
+    "requestedBy": "Maureen Joy Jontilano",
+    "itemType": "Imported Item/s",
+    "clientName": "SOFAIRE",
+    "refNo": "1952-18",
+    "projectName": "PITX",
+    "drNo": "N/A",
+    "date": "2020-09-07",
+    "type": "Pending",
+    "status": "Pending",
+    "items": [
+      {
+    "productName": "PLATE SKID TANK 1 LOW",
+    "barcode": "09243040",
+    "stock": 4,
+    "requestQty": 1,
+    "brand": "LOCAL"
+  }
+    ]
+  },
+  {
+    "srfNo": "2020-083",
+    "requestedBy": "Maureen Joy Jontilano",
+    "itemType": "Imported Item/s",
+    "clientName": "ASEANA 3",
+    "refNo": "PH0156S_2016R",
+    "projectName": "ASEANA 3",
+    "drNo": "N/A",
+    "date": "2020-09-14",
+    "type": "Received by Logistics",
+    "status": "Received by Logistics",
+    "items": [
+     {
+    "productName": "RELAY SOCKET (HORIZONTAL LEGS)",
+    "barcode": "03183989",
+    "stock": 414,
+    "requestQty": 1,
+    "brand": "OMRON"
+  }
+    ]
+  },
+  {
+    "srfNo": "2020-098",
+    "requestedBy": "Maureen Joy Jontilano",
+    "itemType": "Imported Item/s",
+    "clientName": "ASEANA 3",
+    "refNo": "PH0156S_2016R",
+    "projectName": "ASEANA 3",
+    "drNo": "N/A",
+    "date": "2020-11-20",
+    "type": "Approved by Manager",
+    "status": "Approved by Manager",
+    "items": [
+     {
+    "productName": "EC-UBM-050",
+    "barcode": "12245844",
+    "stock": 1,
+    "requestQty": 1,
+    "brand": "BASIC CONTROLS"
+  }
+    ]
+  },
+  {
+    "srfNo": "2020-099",
+    "requestedBy": "Maureen Joy Jontilano",
+    "itemType": "Imported Item/s",
+    "clientName": "AGACONS",
+    "refNo": "18132",
+    "projectName": "N/A",
+    "drNo": "N/A",
+    "date": "2020-11-20",
+    "type": "Received by Logistics",
+    "status": "Received by Logistics",
+    "items": [
+      {
+    "productName": "PLATE FCU FAULT 1",
+    "barcode": "06236023",
+    "stock": 4,
+    "requestQty": 1,
+    "brand": "LOCAL"
+  }
+    ]
+  }
+]

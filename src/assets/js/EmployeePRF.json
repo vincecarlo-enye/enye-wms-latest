@@ -1,0 +1,92 @@
+[
+  {
+    "prfNo": "2020-471",
+    "requestedBy": "Christopher Mallannao",
+    "itemType": "Imported Item/s",
+    "clientName": "RED CAMTECH",
+    "project": "CAGAYAN SHRIMP FACTORY",
+    "poNo": "POS-1020-0702",
+    "status": "Pending"
+  },
+  {
+    "prfNo": "2021-1739-e",
+    "requestedBy": "Sales Cebu",
+    "itemType": "Imported Item/s",
+    "clientName": "CRANECAT TRADING AND SERVICES",
+    "project": "BRIXTON PLACE WESTON TOWER",
+    "poNo": "305231",
+    "status": "Pending"
+  },
+  {
+    "prfNo": "2021-1829-e",
+    "requestedBy": "Sales Cebu",
+    "itemType": "Imported Item/s",
+    "clientName": "DUSIT THANI",
+    "project": "-",
+    "poNo": "4550000529",
+    "status": "Pending"
+  },
+  {
+    "prfNo": "2021-1879-e",
+    "requestedBy": "",
+    "itemType": "Local Item/s",
+    "clientName": "Lauron Refrigeration",
+    "project": "West Jones Project",
+    "poNo": "14248",
+    "status": "Pending"
+  },
+  {
+    "prfNo": "2021-1900-e",
+    "requestedBy": "",
+    "itemType": "Imported Item/s",
+    "clientName": "FR SEVILLA",
+    "project": "THE STILES EAST TOWER",
+    "poNo": "POR0000021584",
+    "status": "Pending"
+  },
+  {
+    "prfNo": "2022-2415-e",
+    "requestedBy": "",
+    "itemType": "Local Item/s",
+    "clientName": "FR Sevilla",
+    "project": "Gotianun",
+    "poNo": "POR0000025429",
+    "status": "Pending"
+  },
+  {
+    "prfNo": "2023-03201-e",
+    "requestedBy": "",
+    "itemType": "Local Item/s",
+    "clientName": "ENYE LTD. CORP",
+    "project": "-",
+    "poNo": "-",
+    "status": "Pending"
+  },
+  {
+    "prfNo": "2023-3191-e",
+    "requestedBy": "",
+    "itemType": "Local Item/s",
+    "clientName": "APMC- AKLAN INC.",
+    "project": "ASIA PACIFIC MEDICAL CENTER- AKLAN",
+    "poNo": "ph0556s_2022R6",
+    "status": "Pending"
+  },
+  {
+    "prfNo": "2023-3234-e",
+    "requestedBy": "",
+    "itemType": "Local Item/s",
+    "clientName": "Nakatomi Electro Mechanical & Services",
+    "project": "Proposed 3 Storey Warehouse & Office Building - LBC",
+    "poNo": "0257-2023",
+    "status": "Pending"
+  },
+  {
+    "prfNo": "2023-3350-e",
+    "requestedBy": "",
+    "itemType": "Local Item/s",
+    "clientName": "Airkhitectural Electro Mechanical Services",
+    "project": "SOLAIRE NORTH",
+    "poNo": "A0088",
+    "status": "Pending"
+  }
+]

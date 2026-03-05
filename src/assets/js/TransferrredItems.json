@@ -1,0 +1,192 @@
+[
+  {
+    "ptfNo": "4033",
+    "poNumber": "0001",
+    "client": "easy link",
+    "purpose": "for shipment",
+    "dateNeeded": "2019-08-09",
+    "approvedBy": "MVM",
+    "status": "Received",
+    "summary": [
+      {
+        "barcode": "01186985",
+        "product": "TF24-SR",
+        "description": "",
+        "quantity": 0,
+        "brand": "BELIMO",
+        "reserveDate": "2018-01-12"
+      }
+    ]
+  },
+  {
+    "ptfNo": "PO201908-05525",
+    "poNumber": "0001",
+    "client": "WATERFRONT MACTAN",
+    "purpose": "for shipment",
+    "dateNeeded": "2019-09-03",
+    "approvedBy": "MVM",
+    "status": "Received",
+    "summary": [
+      {
+        "barcode": "08180984",
+        "product": "STEPDOWN TRANSFORMER BIG 230V-24V, 50 V.A",
+        "description": "",
+        "quantity": 0,
+        "brand": "CASANE LIGHTS TRADING",
+        "reserveDate": "2018-08-08"
+      }
+    ]
+  },
+  {
+    "ptfNo": "PRF-2019-376",
+    "poNumber": "0001",
+    "client": "CEBU STOCKS",
+    "purpose": "for shipment",
+    "dateNeeded": "2019-09-23",
+    "approvedBy": "MVM",
+    "status": "Received",
+    "summary": [
+      {
+        "barcode": "02192059",
+        "product": "TCI-W22-U",
+        "description": "",
+        "quantity": 0,
+        "brand": "VECTOR",
+        "reserveDate": "2019-02-28"
+      }
+    ]
+  },
+  {
+    "ptfNo": "11200",
+    "poNumber": "0001",
+    "client": "LAURON",
+    "purpose": "for shipment",
+    "dateNeeded": "2019-10-17",
+    "approvedBy": "MVM",
+    "status": "Received",
+    "summary": [
+      {
+        "barcode": "02195498",
+        "product": "R6099AO",
+        "description": "",
+        "quantity": 0,
+        "brand": "BELIMO",
+        "reserveDate": "2019-02-14"
+      }
+    ]
+  },
+  {
+    "ptfNo": "CBQ",
+    "poNumber": "0001",
+    "client": "CITY SCAPE PRESENTATION",
+    "purpose": "for shipment",
+    "dateNeeded": "2019-11-11",
+    "approvedBy": "MVM",
+    "status": "Received",
+    "summary": [
+      {
+        "barcode": "02194397",
+        "product": "Z220S-230",
+        "description": "",
+        "quantity": 0,
+        "brand": "BELIMO",
+        "reserveDate": "2019-02-14"
+      }
+    ]
+  },
+  {
+    "ptfNo": "BCJ-43",
+    "poNumber": "0001",
+    "client": "BC JAYME",
+    "purpose": "for shipment",
+    "dateNeeded": "2019-11-26",
+    "approvedBy": "MVM",
+    "status": "Transfer",
+    "summary": [
+      {
+        "barcode": "01190205",
+        "product": "Z225S-230",
+        "description": "Spring-Return Valve Actuator with DN25 2-way zone valve",
+        "quantity": 0,
+        "brand": "BELIMO",
+        "reserveDate": "2019-01-31"
+      }
+    ]
+  },
+  {
+    "ptfNo": "PH-0084C-2019",
+    "poNumber": "0001",
+    "client": "SANVIF",
+    "purpose": "FOR DELIVERY",
+    "dateNeeded": "2020-02-03",
+    "approvedBy": "MVM",
+    "status": "Cancelled",
+    "summary": [
+      {
+        "barcode": "04196724",
+        "product": "Z225S-24",
+        "description": "2 WAY MOTORIZED FAN COIL",
+        "quantity": 0,
+        "brand": "BELIMO",
+        "reserveDate": "2019-04-01"
+      }
+    ]
+  },
+  {
+    "ptfNo": "118",
+    "poNumber": "0001",
+    "client": "GEF",
+    "purpose": "FOR DELIVERY",
+    "dateNeeded": "2020-02-06",
+    "approvedBy": "MVM",
+    "status": "Transfer",
+    "summary": [
+      {
+        "barcode": "04196238",
+        "product": "SBSV-B9N2",
+        "description": "2-Way Brass Solenoid Valve 2\"",
+        "quantity": 0,
+        "brand": "DWYER",
+        "reserveDate": "2019-04-24"
+      }
+    ]
+  },
+  {
+    "ptfNo": "0010763",
+    "poNumber": "0001",
+    "client": "KALAYAAN CEBU",
+    "purpose": "FOR DELIVERY",
+    "dateNeeded": "2020-02-07",
+    "approvedBy": "MVM",
+    "status": "Transfer",
+    "summary": [
+      {
+        "barcode": "05195956",
+        "product": "FSLF230 US",
+        "description": "",
+        "quantity": 0,
+        "brand": "BELIMO",
+        "reserveDate": "2019-05-27"
+      }
+    ]
+  },
+  {
+    "ptfNo": "DV00040536",
+    "poNumber": "0001",
+    "client": "SOUTH CREST HOTEL",
+    "purpose": "FOR DELIVERY",
+    "dateNeeded": "2020-02-10",
+    "approvedBy": "MVM",
+    "status": "Transfer",
+    "summary": [
+      {
+        "barcode": "05195502",
+        "product": "616KD-10-V-TC",
+        "description": "",
+        "quantity": 0,
+        "brand": "DWYER",
+        "reserveDate": "2019-05-10"
+      }
+    ]
+  }
+]

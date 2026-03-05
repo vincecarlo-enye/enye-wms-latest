@@ -1,0 +1,92 @@
+[
+  {
+    "prfNo": "2021-1879-e",
+    "requestedBy": "",
+    "itemType": "Local Item/s",
+    "clientName": "Lauron Refrigeration",
+    "project": "West Jones Project",
+    "poNo": "14248",
+    "status": "Pending"
+  },
+  {
+    "prfNo": "2022-2415-e",
+    "requestedBy": "",
+    "itemType": "Local Item/s",
+    "clientName": "FR Sevilla",
+    "project": "Gotianun",
+    "poNo": "POR0000025429",
+    "status": "Pending"
+  },
+  {
+    "prfNo": "2023-03201-e",
+    "requestedBy": "",
+    "itemType": "Local Item/s",
+    "clientName": "ENYE LTD. CORP",
+    "project": "-",
+    "poNo": "-",
+    "status": "Pending"
+  },
+  {
+    "prfNo": "2023-3191-e",
+    "requestedBy": "",
+    "itemType": "Local Item/s",
+    "clientName": "APMC- AKLAN INC.",
+    "project": "ASIA PACIFIC MEDICAL CENTER- AKLAN",
+    "poNo": "ph0556s_2022R6",
+    "status": "Pending"
+  },
+  {
+    "prfNo": "2023-3234-e",
+    "requestedBy": "",
+    "itemType": "Local Item/s",
+    "clientName": "Nakatomi Electro Mechanical & Services",
+    "project": "Proposed 3 Storey Warehouse & Office Building - LBC",
+    "poNo": "0257-2023",
+    "status": "Pending"
+  },
+  {
+    "prfNo": "2023-3350-e",
+    "requestedBy": "",
+    "itemType": "Local Item/s",
+    "clientName": "Airkhitectural Electro Mechanical Services",
+    "project": "SOLAIRE NORTH",
+    "poNo": "A0088",
+    "status": "Pending"
+  },
+  {
+    "prfNo": "2023-3505-e",
+    "requestedBy": "",
+    "itemType": "Local Item/s",
+    "clientName": "MC Montgear Electromech Corp.",
+    "project": "Style Residences",
+    "poNo": "212",
+    "status": "Pending"
+  },
+  {
+    "prfNo": "2023-3627-e",
+    "requestedBy": "",
+    "itemType": "Local Item/s",
+    "clientName": "CRANECAT TRADING AND SERVICES",
+    "project": "SATORI - AMANI",
+    "poNo": "308799",
+    "status": "Pending"
+  },
+  {
+    "prfNo": "2023-3634-e",
+    "requestedBy": "",
+    "itemType": "Local Item/s",
+    "clientName": "THE PENINSULA MANILA",
+    "project": "REPLACING VALVE OF AHU",
+    "poNo": "PMN000196936",
+    "status": "Pending"
+  },
+  {
+    "prfNo": "2023-3721-e",
+    "requestedBy": "",
+    "itemType": "Local Item/s",
+    "clientName": "ENGINEERING DEPT.",
+    "project": "TESTING BOARD",
+    "poNo": "N/A",
+    "status": "Pending"
+  }
+]

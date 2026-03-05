@@ -1,0 +1,32 @@
+[
+  {
+    "name": "IMPORTED MATERIALS",
+    "description": "Imported materials",
+    "createdAt": "2018-07-20 14:53:16"
+  },
+  {
+    "name": "LOCAL MATERIALS",
+    "description": "Local Materials",
+    "createdAt": "2018-07-20 15:04:53"
+  },
+  {
+    "name": "MOCK-UP MATERIALS",
+    "description": "MOCK UP",
+    "createdAt": "2018-07-20 15:05:32"
+  },
+  {
+    "name": "NON MOVING IMPORTED MATERIALS",
+    "description": "NON MOVING IMPORTED MATERIALS",
+    "createdAt": "2018-07-20 14:55:21"
+  },
+  {
+    "name": "NON MOVING LOCAL MATERIALS",
+    "description": "NON MOVING",
+    "createdAt": "2018-07-05 16:06:06"
+  },
+  {
+    "name": "TOOLS",
+    "description": "Local Tools",
+    "createdAt": "2018-07-20 15:03:16"
+  }
+]

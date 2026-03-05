@@ -1,0 +1,12 @@
+[
+  { "modelName": "1205B", "barcode": "05188671", "quantity": 1, "dateArrival": "N/A", "dateReported": "7/31/18", "remarks": "defective for repair" },
+  { "modelName": "BLOWER FAN 22O VAC", "barcode": "02196695", "quantity": 1, "dateArrival": "N/A", "dateReported": "MAY 13, 2023", "remarks": "NOT FUNCTION" },
+  { "modelName": "BLOWER FAN 22O VAC", "barcode": "02196695", "quantity": 1, "dateArrival": "N/A", "dateReported": "SEPT. 29, 2023", "remarks": "NOT FUNCTIONAL" },
+  { "modelName": "BLOWER FAN 22O VAC", "barcode": "02196695", "quantity": 1, "dateArrival": "N/A", "dateReported": "DEC. 6, 2024", "remarks": "NOT OPERATIONAL" },
+  { "modelName": "BUZZER 24V PILOT LIGHT 25MM", "barcode": "11187541", "quantity": 1, "dateArrival": "N/A", "dateReported": "nov. 17, 2022", "remarks": "defective" },
+  { "modelName": "CFU-M211", "barcode": "05186882", "quantity": 1, "dateArrival": "N/A", "dateReported": "AUG 5 2O19", "remarks": "DEFFECTIVE" },
+  { "modelName": "CLEAR STICKER PAPER", "barcode": "04185672", "quantity": 1, "dateArrival": "N/A", "dateReported": "APRIL 23, 2018", "remarks": "DAMAGE ( stick on paper)" },
+  { "modelName": "CLEAR STICKER PAPER", "barcode": "04185672", "quantity": 6, "dateArrival": "N/A", "dateReported": "12/21/2018", "remarks": "DAMAGE" },
+  { "modelName": "COMBINED TERMINAL BLOCK", "barcode": "", "quantity": 14, "dateArrival": "N/A", "dateReported": "FEB. 14, 2019", "remarks": "LOSS THREAD" },
+  { "modelName": "COMBINED TERMINAL BLOCK", "barcode": "", "quantity": 2, "dateArrival": "N/A", "dateReported": "12/9/2020", "remarks": "LOSS THREAD" }
+]

@@ -1,0 +1,218 @@
+[
+  {
+    "srfNo": "2019-002",
+    "requestedBy": "Ivy Mae Catipay",
+    "intendedFor": "BETA ELECTROMECHANICAL",
+    "usedFor": "-",
+    "itemType": "Imported Item/s",
+    "reservedDate": "02-06-2024",
+    "status": "Approved by Manager",
+    "remarks": "-",
+    "items": [
+      {
+        "productName": "OMC20D",
+        "barcode": "10198790",
+        "quantity": 4,
+        "uom": "PC",
+        "notes": "",
+        "releaseOrReserve": "Approved"
+      }
+    ]
+  },
+  {
+    "srfNo": "2019-003",
+    "requestedBy": "Roseller Umiten",
+    "intendedFor": "PLUS CONSTRUCTION",
+    "usedFor": "SM 4ECOM Project",
+    "itemType": "Imported Item/s",
+    "reservedDate": "02-06-2024",
+    "status": "Approved by Manager",
+    "remarks": "-",
+    "items": [
+      {
+        "productName": "OMC40D",
+        "barcode": "10190317",
+        "quantity": 4,
+        "uom": "PC",
+        "notes": "",
+        "releaseOrReserve": "Approved"
+      }
+    ]
+  },
+  {
+    "srfNo": "2019-004",
+    "requestedBy": "Ivy Mae Catipay",
+    "intendedFor": "AGACONS CONSTRUCTION",
+    "usedFor": "-",
+    "itemType": "Imported Item/s",
+    "reservedDate": "02-06-2024",
+    "status": "Received by Logistics",
+    "remarks": "-",
+    "items": [
+      {
+        "productName": "OMC14D",
+        "barcode": "10195391",
+        "quantity": 3,
+        "uom": "PC",
+        "notes": "",
+        "releaseOrReserve": "Received"
+      }
+    ]
+  },
+  {
+    "srfNo": "2020-009",
+    "requestedBy": "Roseller Umiten",
+    "intendedFor": "Polaris Integrated",
+    "usedFor": "n/a",
+    "itemType": "Imported Item/s",
+    "reservedDate": "02-06-2024",
+    "status": "Approved by Manager",
+    "remarks": "-",
+    "items": [
+      {
+        "productName": "OMC20D",
+        "barcode": "10198790",
+        "quantity": 2,
+        "uom": "PC",
+        "notes": "",
+        "releaseOrReserve": "Approved"
+      }
+    ]
+  },
+  {
+    "srfNo": "2020-016",
+    "requestedBy": "Shiela Marie Salomon",
+    "intendedFor": "TROPICAL",
+    "usedFor": "P.O. 2020-412",
+    "itemType": "Imported Item/s",
+    "reservedDate": "02-06-2024",
+    "status": "Pending",
+    "remarks": "-",
+    "items": [
+      {
+        "productName": "R664AO",
+        "barcode": "12195229",
+        "quantity": 1,
+        "uom": "PC",
+        "notes": "SR24A-SR-5",
+        "releaseOrReserve": "Pending"
+      },
+      {
+        "productName": "SR24A-SR-5",
+        "barcode": "10192123",
+        "quantity": 2,
+        "uom": "PCS",
+        "notes": "",
+        "releaseOrReserve": "Pending"
+      },
+      {
+        "productName": "R679AO",
+        "barcode": "10193284",
+        "quantity": 2,
+        "uom": "PCS",
+        "notes": "",
+        "releaseOrReserve": "Pending"
+      }
+    ]
+  },
+  {
+    "srfNo": "2020-017",
+    "requestedBy": "Shiela Marie Salomon",
+    "intendedFor": "TROPICAL",
+    "usedFor": "PO 2020-418",
+    "itemType": "Imported Item/s",
+    "reservedDate": "02-06-2024",
+    "status": "Pending",
+    "remarks": "-",
+    "items": [
+      {
+        "productName": "R664AO",
+        "barcode": "12195229",
+        "quantity": 2,
+        "uom": "PC",
+        "notes": "PO 2020-418",
+        "releaseOrReserve": "Pending"
+      }
+    ]
+  },
+  {
+    "srfNo": "2020-024",
+    "requestedBy": "Cynthia Bande",
+    "intendedFor": "SM ANGONO",
+    "usedFor": "PO#SMPH-0000251323",
+    "itemType": "Imported Item/s",
+    "reservedDate": "02-06-2024",
+    "status": "Approved by Logistics Manager",
+    "remarks": "-",
+    "items": [
+      {
+        "productName": "OMC50D",
+        "barcode": "10194456",
+        "quantity": 5,
+        "uom": "PCS",
+        "notes": "",
+        "releaseOrReserve": "Approved"
+      }
+    ]
+  },
+  {
+    "srfNo": "2020-025",
+    "requestedBy": "Cynthia Bande",
+    "intendedFor": "SM SAN FERNANDO",
+    "usedFor": "PO# SMPH-0000251345",
+    "itemType": "Imported Item/s",
+    "reservedDate": "02-06-2024",
+    "status": "Pending",
+    "remarks": "-",
+    "items": [
+      {
+        "productName": "OMC60D",
+        "barcode": "10195567",
+        "quantity": 3,
+        "uom": "PCS",
+        "notes": "",
+        "releaseOrReserve": "Pending"
+      }
+    ]
+  },
+  {
+    "srfNo": "2020-035",
+    "requestedBy": "Mary Joy Reyes",
+    "intendedFor": "FR SEVILLA",
+    "usedFor": "FR SEVILLA - Glorietta 3 Landlease PROJECT",
+    "itemType": "Imported Item/s",
+    "reservedDate": "02-06-2024",
+    "status": "Pending",
+    "remarks": "-",
+    "items": [
+      {
+        "productName": "OMC70D",
+        "barcode": "10196678",
+        "quantity": 2,
+        "uom": "PCS",
+        "notes": "",
+        "releaseOrReserve": "Pending"
+      }
+    ]
+  },
+  {
+    "srfNo": "2020-037",
+    "requestedBy": "Judy Ann Semaña",
+    "intendedFor": "FRM AIRCONDITIONING",
+    "usedFor": "FRM AIRCONDITIONING",
+    "itemType": "Imported Item/s",
+    "reservedDate": "02-06-2024",
+    "status": "Approved by Manager",
+    "remarks": "-",
+    "items": [
+      {
+        "productName": "OMC80D",
+        "barcode": "10197789",
+        "quantity": 1,
+        "uom": "PC",
+        "notes": "",
+        "releaseOrReserve": "Approved"
+      }
+    ]
+  }
+]

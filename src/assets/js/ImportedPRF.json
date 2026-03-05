@@ -1,0 +1,92 @@
+[
+  {
+    "prfNo": "2020-471",
+    "requestedBy": "Christopher Mallannao",
+    "itemType": "Imported Item/s",
+    "clientName": "RED CAMTECH",
+    "project": "CAGAYAN SHRIMP FACTORY",
+    "poNo": "POS-1020-0702",
+    "status": "PENDING PRF"
+  },
+  {
+    "prfNo": "2021-1739-e",
+    "requestedBy": "Sales Cebu",
+    "itemType": "Imported Item/s",
+    "clientName": "CRANECAT TRADING AND SERVICES",
+    "project": "BRIXTON PLACE WESTON TOWER",
+    "poNo": "305231",
+    "status": "PENDING PRF"
+  },
+  {
+    "prfNo": "2021-1829-e",
+    "requestedBy": "Sales Cebu",
+    "itemType": "Imported Item/s",
+    "clientName": "DUSIT THANI",
+    "project": "-",
+    "poNo": "4550000529",
+    "status": "PENDING PRF"
+  },
+  {
+    "prfNo": "2021-1900-e",
+    "requestedBy": "",
+    "itemType": "Imported Item/s",
+    "clientName": "FR SEVILLA",
+    "project": "THE STILES EAST TOWER",
+    "poNo": "POR0000021584",
+    "status": "PENDING PRF"
+  },
+  {
+    "prfNo": "2023-3462-e",
+    "requestedBy": "",
+    "itemType": "Imported Item/s",
+    "clientName": "FOR STOCKS",
+    "project": "-",
+    "poNo": "-",
+    "status": "PENDING PRF"
+  },
+  {
+    "prfNo": "2023-3718-e",
+    "requestedBy": "",
+    "itemType": "Imported Item/s",
+    "clientName": "D.A. ABCEDE/SMEDD",
+    "project": "SM BICUTAN EXPANSION",
+    "poNo": "SMPH-0000515078",
+    "status": "PENDING PRF"
+  },
+  {
+    "prfNo": "2023-3798-e",
+    "requestedBy": "",
+    "itemType": "Imported Item/s",
+    "clientName": "LAURON Refrigeration & Air-conditioning Service Corporation",
+    "project": "CHONGHUA HOSPITAL",
+    "poNo": "18118",
+    "status": "PENDING PRF"
+  },
+  {
+    "prfNo": "2024-4132-e",
+    "requestedBy": "",
+    "itemType": "Imported Item/s",
+    "clientName": "KALAYAAN ENGINEERING CO., INC.",
+    "project": "Smithbell Building",
+    "poNo": "0038309",
+    "status": "PENDING PRF"
+  },
+  {
+    "prfNo": "2024-4133-e",
+    "requestedBy": "",
+    "itemType": "Imported Item/s",
+    "clientName": "KALAYAAN ENGINEERING CO., INC.",
+    "project": "Smithbell Building",
+    "poNo": "0038309",
+    "status": "PENDING PRF"
+  },
+  {
+    "prfNo": "2024-4769-e",
+    "requestedBy": "",
+    "itemType": "Imported Item/s",
+    "clientName": "FR SEVILLA",
+    "project": "PCT NORTH DDC",
+    "poNo": "POR00005924",
+    "status": "PENDING PRF"
+  }
+]

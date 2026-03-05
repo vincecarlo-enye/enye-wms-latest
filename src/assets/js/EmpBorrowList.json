@@ -1,0 +1,106 @@
+[
+  {
+    "srfNo": "2019-001",
+    "requestedBy": "Roly Casane",
+    "intendedFor": "Ojeda Office",
+    "usedFor": "For sample testing",
+    "itemType": "Imported Item/s",
+    "borrowedDate": "02-06-2024",
+    "returnedOn": "05-06-2024",
+    "status": "Reserved/Released by Logistics",
+    "items": [
+      { "productName": "Laptop", "barcode": "10001", "stock": 1, "uom": "pcs", "notes": "Test" }
+    ]
+  },
+  {
+    "srfNo": "2020-005",
+    "requestedBy": "Roly Casane",
+    "intendedFor": "OJEDA OFFICE",
+    "usedFor": "TESTING OF NEW PRODUCTS",
+    "itemType": "Imported Item/s",
+    "borrowedDate": "02-06-2024",
+    "returnedOn": null,
+    "status": "Reserved/Released by Logistics",
+    "items": [
+      { "productName": "Projector", "barcode": "10002", "stock": 1, "uom": "pcs", "notes": "" }
+    ]
+  },
+  {
+    "srfNo": "2020-006",
+    "requestedBy": "Marvin James Pioquinto",
+    "intendedFor": "Intellismart Incorporated",
+    "usedFor": "Sample Presentation to Holiday Inn Hotel",
+    "itemType": "Imported Item/s",
+    "borrowedDate": "02-06-2024",
+    "returnedOn": null,
+    "status": "Reserved/Released by Logistics",
+    "items": [
+      { "productName": "Camera", "barcode": "10003", "stock": 2, "uom": "pcs", "notes": "" }
+    ]
+  },
+  {
+    "srfNo": "2020-007",
+    "requestedBy": "Maureen Joy Jontilano",
+    "intendedFor": "ROBINSONS VALENCIA",
+    "usedFor": "TESTING AND COMMISSIONING",
+    "itemType": "Imported Item/s",
+    "borrowedDate": "02-06-2024",
+    "returnedOn": null,
+    "status": "Reserved/Released by Logistics",
+    "items": [
+      { "productName": "Monitor", "barcode": "10004", "stock": 3, "uom": "pcs", "notes": "" }
+    ]
+  },
+  {
+    "srfNo": "2020-010",
+    "requestedBy": "Roseller Umiten",
+    "intendedFor": "Polaris Integrated",
+    "usedFor": "n/a",
+    "itemType": "Imported Item/s",
+    "borrowedDate": "02-06-2024",
+    "returnedOn": null,
+    "status": "Disapproved by Logistics",
+    "items": [
+      { "productName": "Keyboard", "barcode": "10005", "stock": 5, "uom": "pcs", "notes": "Damaged" }
+    ]
+  },
+  {
+    "srfNo": "2020-011",
+    "requestedBy": "Roseller Umiten",
+    "intendedFor": "Wondercool",
+    "usedFor": "Red Planet Proj",
+    "itemType": "Imported Item/s",
+    "borrowedDate": "02-06-2024",
+    "returnedOn": null,
+    "status": "Approved by Logistics Manager",
+    "items": [
+      { "productName": "Tablet", "barcode": "10006", "stock": 2, "uom": "pcs", "notes": "" }
+    ]
+  },
+  {
+    "srfNo": "2021-001",
+    "requestedBy": "Janine Cruz",
+    "intendedFor": "Metro Mall",
+    "usedFor": "Product Demo",
+    "itemType": "Local Item/s",
+    "borrowedDate": "10-06-2024",
+    "returnedOn": null,
+    "status": "Pending",
+    "items": [
+      { "productName": "VR Headset", "barcode": "20001", "stock": 1, "uom": "pcs", "notes": "" }
+    ]
+  },
+  {
+    "srfNo": "2021-002",
+    "requestedBy": "Carlos Dela Cruz",
+    "intendedFor": "SM City",
+    "usedFor": "Training",
+    "itemType": "Imported Item/s",
+    "borrowedDate": "12-06-2024",
+    "returnedOn": null,
+    "status": "Reserved/Released by Logistics",
+    "items": [
+      { "productName": "Printer", "barcode": "20002", "stock": 1, "uom": "pcs", "notes": "" }
+    ]
+  }
+]
