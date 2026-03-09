@@ -6,8 +6,8 @@ import {
   Calendar,
   Hash,
 } from "lucide-react";
+import { RequestService } from "../services/request.service";
 
-// Icon map for Borrow/Reserve form (some reused for Warranty form)
 const icons = {
   intendedFor: Tag,
   toBeUsedFor: Tag,
@@ -26,12 +26,9 @@ const icons = {
   remarks: Tag,
 };
 
-// InputField
 function InputField({ name, label, type = "text", disabled, value, onChange, min, step }) {
   const Icon = icons[name] || Tag;
   const id = `input-${name}`;
-
-  // Label floats if value exists or it's a date
   const hasValue = (value !== undefined && value !== "") || (type === "date" && value);
 
   return (
@@ -67,7 +64,6 @@ function InputField({ name, label, type = "text", disabled, value, onChange, min
   );
 }
 
-// SelectField
 function SelectField({ name, label, value, onChange, options }) {
   const Icon = icons[name] || Tag;
   const id = `select-${name}`;
@@ -106,7 +102,6 @@ function SelectField({ name, label, value, onChange, options }) {
   );
 }
 
-// TextareaField
 function TextareaField({ name, label, rows = 4, value, onChange }) {
   const Icon = icons[name] || Tag;
   const id = `textarea-${name}`;
@@ -140,11 +135,13 @@ function TextareaField({ name, label, rows = 4, value, onChange }) {
   );
 }
 
-
 export default function RequestForm() {
-  const [purpose, setPurpose] = useState(""); // "borrow", "reserve", "warranty"
-  // Borrow/Reserve form state
+  const [purpose, setPurpose] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [warrantyFile, setWarrantyFile] = useState(null);
+  const [productQtys, setProductQtys] = useState({});
+
   const [borrowReserveData, setBorrowReserveData] = useState({
     intendedFor: "",
     toBeUsedFor: "",
@@ -152,9 +149,9 @@ export default function RequestForm() {
     dateNeeded: "",
     toBeReturnOn: "",
     remarks: "",
-    selectedItems: [], // { item, barcode, qty, uom }
+    selectedItems: [],
   });
-  // Warranty form state
+
   const [warrantyData, setWarrantyData] = useState({
     clientName: "",
     projectName: "",
@@ -167,13 +164,11 @@ export default function RequestForm() {
     warrantyClaimETA: "",
     replacementDate: "",
     remarks: "",
-    selectedItems: [], // { item, barcode, qty, uom }
+    selectedItems: [],
   });
 
-  // Sample item options for selects
   const itemTypes = ["Electrical", "Mechanical", "Instrumentation", "Others"];
 
-  // Sample products for Borrow/Reserve form table (simplified)
   const borrowProducts = [
     {
       name: "SIGNAL INPUT RUBBER SLEEVE",
@@ -212,27 +207,31 @@ export default function RequestForm() {
     },
   ];
 
-  // Handler for radio button change
   const handlePurposeChange = (e) => {
     setPurpose(e.target.value);
   };
 
-  // Borrow/Reserve form change handler
   const handleBorrowReserveChange = (e) => {
     const { name, value } = e.target;
     setBorrowReserveData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Warranty form change handler
   const handleWarrantyChange = (e) => {
     const { name, value } = e.target;
     setWarrantyData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Add item to Borrow/Reserve selectedItems
-  const addBorrowItem = (product, qty) => {
+  const handleBorrowQtyChange = (barcode, value) => {
+    setProductQtys((prev) => ({
+      ...prev,
+      [barcode]: Math.max(1, Number(value) || 1),
+    }));
+  };
+
+  const addBorrowItem = (product) => {
+    const qty = Number(productQtys[product.barcode] ?? 1);
     if (qty < 1) return;
-    // check if item already added
+
     if (borrowReserveData.selectedItems.find((i) => i.barcode === product.barcode)) return;
 
     setBorrowReserveData((prev) => ({
@@ -244,12 +243,12 @@ export default function RequestForm() {
           barcode: product.barcode,
           qty,
           uom: product.uom,
+          brand: product.brand,
         },
       ],
     }));
   };
 
-  // Remove item from Borrow/Reserve list
   const removeBorrowItem = (barcode) => {
     setBorrowReserveData((prev) => ({
       ...prev,
@@ -257,7 +256,6 @@ export default function RequestForm() {
     }));
   };
 
-  // Add item to Warranty form list (simple manual add)
   const addWarrantyItem = () => {
     setWarrantyData((prev) => ({
       ...prev,
@@ -265,7 +263,6 @@ export default function RequestForm() {
     }));
   };
 
-  // Remove item from Warranty list by index
   const removeWarrantyItem = (index) => {
     setWarrantyData((prev) => ({
       ...prev,
@@ -273,28 +270,17 @@ export default function RequestForm() {
     }));
   };
 
-  // Handle Warranty item change
   const handleWarrantyItemChange = (index, field, value) => {
     const newItems = [...warrantyData.selectedItems];
     newItems[index] = { ...newItems[index], [field]: value };
     setWarrantyData((prev) => ({ ...prev, selectedItems: newItems }));
   };
 
-  // Handle submit for Borrow/Reserve
-  const handleBorrowReserveSubmit = (e) => {
-    e.preventDefault();
-    if (
-      !borrowReserveData.intendedFor.trim() ||
-      !borrowReserveData.toBeUsedFor.trim() ||
-      !borrowReserveData.itemType ||
-      !borrowReserveData.dateNeeded ||
-      !borrowReserveData.toBeReturnOn ||
-      borrowReserveData.selectedItems.length === 0
-    ) {
-      alert("Please fill all required fields and add at least one item.");
-      return;
-    }
-    alert("Borrow/Reserve request submitted!");
+  const handleWarrantyFileChange = (e) => {
+    setWarrantyFile(e.target.files?.[0] || null);
+  };
+
+  const resetBorrowReserve = () => {
     setBorrowReserveData({
       intendedFor: "",
       toBeUsedFor: "",
@@ -304,23 +290,12 @@ export default function RequestForm() {
       remarks: "",
       selectedItems: [],
     });
+    setSearchTerm("");
+    setProductQtys({});
     setPurpose("");
   };
 
-  // Handle submit for Warranty
-  const handleWarrantySubmit = (e) => {
-    e.preventDefault();
-    if (
-      !warrantyData.clientName.trim() ||
-      !warrantyData.projectName.trim() ||
-      !warrantyData.itemType ||
-      !warrantyData.itemSuppliedBy.trim() ||
-      !warrantyData.deliveryDate
-    ) {
-      alert("Please fill all required fields.");
-      return;
-    }
-    alert("Warranty claim submitted!");
+  const resetWarranty = () => {
     setWarrantyData({
       clientName: "",
       projectName: "",
@@ -335,7 +310,107 @@ export default function RequestForm() {
       remarks: "",
       selectedItems: [],
     });
+    setWarrantyFile(null);
     setPurpose("");
+  };
+
+  const handleBorrowReserveSubmit = async (e) => {
+    e.preventDefault();
+
+    if (
+      !borrowReserveData.intendedFor.trim() ||
+      !borrowReserveData.toBeUsedFor.trim() ||
+      !borrowReserveData.itemType ||
+      !borrowReserveData.dateNeeded ||
+      !borrowReserveData.toBeReturnOn ||
+      borrowReserveData.selectedItems.length === 0
+    ) {
+      alert("Please fill all required fields and add at least one item.");
+      return;
+    }
+
+    const payload = {
+      intended_for: borrowReserveData.intendedFor,
+      to_be_used_for: borrowReserveData.toBeUsedFor,
+      item_type: borrowReserveData.itemType,
+      date_needed: borrowReserveData.dateNeeded,
+      to_be_return_on: borrowReserveData.toBeReturnOn,
+      remarks: borrowReserveData.remarks,
+      items: borrowReserveData.selectedItems.map((item) => ({
+        item: item.item,
+        barcode: item.barcode,
+        qty: item.qty,
+        uom: item.uom,
+        brand: item.brand ?? "",
+      })),
+    };
+
+    try {
+      setLoading(true);
+      await RequestService.submitBorrowOrReserve(purpose, payload);
+      alert(`${purpose === "borrow" ? "Borrow" : "Reserve"} request submitted!`);
+      resetBorrowReserve();
+    } catch (err) {
+      console.error("Borrow/Reserve submit error:", err);
+      alert(
+        err?.response?.data?.message ||
+        err?.response?.data?.error ||
+        "Failed to submit request."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleWarrantySubmit = async (e) => {
+    e.preventDefault();
+
+    if (
+      !warrantyData.clientName.trim() ||
+      !warrantyData.projectName.trim() ||
+      !warrantyData.itemType ||
+      !warrantyData.itemSuppliedBy.trim() ||
+      !warrantyData.deliveryDate
+    ) {
+      alert("Please fill all required fields.");
+      return;
+    }
+
+    const payload = {
+      client_name: warrantyData.clientName,
+      project_name: warrantyData.projectName,
+      item_type: warrantyData.itemType,
+      item_supplied_by: warrantyData.itemSuppliedBy,
+      delivery_date: warrantyData.deliveryDate,
+      reference_no: warrantyData.referenceNo,
+      principal_invoice: warrantyData.principalInvoice,
+      dr_no: warrantyData.drNo,
+      warranty_claim_eta: warrantyData.warrantyClaimETA,
+      replacement_date: warrantyData.replacementDate,
+      remarks: warrantyData.remarks,
+      items: warrantyData.selectedItems.map((item) => ({
+        item: item.item,
+        barcode: item.barcode,
+        qty: item.qty,
+        uom: item.uom,
+      })),
+    };
+
+    try {
+      setLoading(true);
+      await RequestService.submitWarranty({ payload, file: warrantyFile });
+      alert("Warranty claim submitted!");
+      resetWarranty();
+    } catch (err) {
+      console.error("Warranty submit error:", err);
+      alert(
+        err?.response?.data?.message ||
+        err?.response?.data?.error ||
+        "Failed to submit warranty."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -344,459 +419,409 @@ export default function RequestForm() {
         <div>
           <h2 className="text-2xl font-bold text-orange-600">Request Form</h2>
         </div>
-        
 
         <div className="flex flex-wrap gap-4 mt-3">
-            <p className="text-sm text-gray-500 pt-2">Please select purpose:</p>
-  {["borrow", "reserve", "warranty"].map((option) => {
-    const label =
-      option === "borrow"
-        ? "Borrow"
-        : option === "reserve"
-        ? "Reserve"
-        : "Warranty claim / Replacement";
-    const isActive = purpose === option;
+          <p className="text-sm text-gray-500 pt-2">Please select purpose:</p>
+          {["borrow", "reserve", "warranty"].map((option) => {
+            const label =
+              option === "borrow"
+                ? "Borrow"
+                : option === "reserve"
+                ? "Reserve"
+                : "Warranty claim / Replacement";
+            const isActive = purpose === option;
 
-    return (
-      <label
-        key={option}
-        className={`cursor-pointer px-4 py-2 rounded-lg font-semibold border transition-colors 
-          ${isActive ? "bg-orange-500 text-white border-orange-500" : "bg-white text-gray-700 border-gray-300"}
-          hover:bg-orange-100 hover:border-orange-300`}
-      >
-        <input
-          type="radio"
-          name="purpose"
-          value={option}
-          checked={isActive}
-          onChange={handlePurposeChange}
-          className="hidden"
-        />
-        {label}
-      </label>
-    );
-  })}
-</div>
-
+            return (
+              <label
+                key={option}
+                className={`cursor-pointer px-4 py-2 rounded-lg font-semibold border transition-colors
+                ${isActive ? "bg-orange-500 text-white border-orange-500" : "bg-white text-gray-700 border-gray-300"}
+                hover:bg-orange-100 hover:border-orange-300`}
+              >
+                <input
+                  type="radio"
+                  name="purpose"
+                  value={option}
+                  checked={isActive}
+                  onChange={handlePurposeChange}
+                  className="hidden"
+                />
+                {label}
+              </label>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Borrow / Reserve Form */}
-      
-{(purpose === "borrow" || purpose === "reserve") && (
-  <form
-    onSubmit={handleBorrowReserveSubmit}
-    className="bg-white p-6 rounded-xl shadow-lg space-y-6"
-  >
-    {/* Section Label */}
-    <div className="text-gray-700 font-semibold text-sm">FOR BORROWED/RESERVED</div>
+      {(purpose === "borrow" || purpose === "reserve") && (
+        <form onSubmit={handleBorrowReserveSubmit} className="bg-white p-6 rounded-xl shadow-lg space-y-6">
+          <div className="text-gray-700 font-semibold text-sm">FOR BORROWED/RESERVED</div>
 
-    {/* Top Row */}
-    <div className="flex flex-wrap gap-6 mb-3 text-xs font-semibold text-gray-700">
-      <div className="flex flex-col flex-1 min-w-70">
-        <InputField
-          name="intendedFor"
-          label="Intended for*"
-          value={borrowReserveData.intendedFor}
-          onChange={handleBorrowReserveChange}
-        />
-      </div>
-      <div className="flex flex-col flex-1 min-w-70">
-        <InputField
-          name="toBeUsedFor"
-          label="To be used for"
-          value={borrowReserveData.toBeUsedFor}
-          onChange={handleBorrowReserveChange}
-        />
-      </div>
-    </div>
+          <div className="flex flex-wrap gap-6 mb-3 text-xs font-semibold text-gray-700">
+            <div className="flex flex-col flex-1 min-w-[280px]">
+              <InputField
+                name="intendedFor"
+                label="Intended for*"
+                value={borrowReserveData.intendedFor}
+                onChange={handleBorrowReserveChange}
+              />
+            </div>
+            <div className="flex flex-col flex-1 min-w-[280px]">
+              <InputField
+                name="toBeUsedFor"
+                label="To be used for*"
+                value={borrowReserveData.toBeUsedFor}
+                onChange={handleBorrowReserveChange}
+              />
+            </div>
+          </div>
 
-    {/* Item Type / Dates Row */}
-<div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-gray-700 font-semibold">
-  <div className="flex flex-col">
-    <SelectField
-      name="itemType"
-      label="Item type*"
-      value={borrowReserveData.itemType}
-      onChange={handleBorrowReserveChange}
-      options={itemTypes}
-    />
-  </div>
-  <div className="flex flex-col">
-    <InputField
-      name="dateNeeded"
-      label="Date needed*"
-      type="date"
-      value={borrowReserveData.dateNeeded}
-      onChange={handleBorrowReserveChange}
-    />
-  </div>
-  <div className="flex flex-col">
-    <InputField
-      name="toBeReturnOn"
-      label="To be return on*"
-      type="date"
-      value={borrowReserveData.toBeReturnOn}
-      onChange={handleBorrowReserveChange}
-    />
-  </div>
-</div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-gray-700 font-semibold">
+            <div className="flex flex-col">
+              <SelectField
+                name="itemType"
+                label="Item type*"
+                value={borrowReserveData.itemType}
+                onChange={handleBorrowReserveChange}
+                options={itemTypes}
+              />
+            </div>
+            <div className="flex flex-col">
+              <InputField
+                name="dateNeeded"
+                label="Date needed*"
+                type="date"
+                value={borrowReserveData.dateNeeded}
+                onChange={handleBorrowReserveChange}
+              />
+            </div>
+            <div className="flex flex-col">
+              <InputField
+                name="toBeReturnOn"
+                label="To be return on*"
+                type="date"
+                value={borrowReserveData.toBeReturnOn}
+                onChange={handleBorrowReserveChange}
+              />
+            </div>
+          </div>
 
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse border border-gray-300 text-xs">
+              <thead>
+                <tr className="bg-gray-100 text-gray-600">
+                  <th className="border border-gray-300 px-2 py-1 text-left">ITEM</th>
+                  <th className="border border-gray-300 px-2 py-1 text-left">BARCODE</th>
+                  <th className="border border-gray-300 px-2 py-1 text-center">QTY</th>
+                  <th className="border border-gray-300 px-2 py-1 text-left">UOM</th>
+                  <th className="border border-gray-300 px-2 py-1 text-center">Remove</th>
+                </tr>
+              </thead>
+              <tbody>
+                {borrowReserveData.selectedItems.length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="text-center py-3 text-gray-500">
+                      No items added
+                    </td>
+                  </tr>
+                )}
+                {borrowReserveData.selectedItems.map(({ item, barcode, qty, uom }) => (
+                  <tr key={barcode}>
+                    <td className="border border-gray-300 px-2 py-1">{item}</td>
+                    <td className="border border-gray-300 px-2 py-1">{barcode}</td>
+                    <td className="border border-gray-300 px-2 py-1 text-center">{qty}</td>
+                    <td className="border border-gray-300 px-2 py-1">{uom}</td>
+                    <td className="border border-gray-300 px-2 py-1 text-center">
+                      <button
+                        type="button"
+                        onClick={() => removeBorrowItem(barcode)}
+                        className="text-red-600 hover:text-red-800 font-bold"
+                        title="Remove item"
+                      >
+                        &times;
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-    {/* Selected Items Table */}
-    <div className="overflow-x-auto">
-      <table className="w-full border-collapse border border-gray-300 text-xs">
-        <thead>
-          <tr className="bg-gray-100 text-gray-600">
-            <th className="border border-gray-300 px-2 py-1 text-left">ITEM</th>
-            <th className="border border-gray-300 px-2 py-1 text-left">BARCODE</th>
-            <th className="border border-gray-300 px-2 py-1 text-center">QTY</th>
-            <th className="border border-gray-300 px-2 py-1 text-left">UOM</th>
-            <th className="border border-gray-300 px-2 py-1 text-center">Remove</th>
-          </tr>
-        </thead>
-        <tbody>
-          {borrowReserveData.selectedItems.length === 0 && (
-            <tr>
-              <td colSpan={5} className="text-center py-3 text-gray-500">
-                No items added
-              </td>
-            </tr>
-          )}
-          {borrowReserveData.selectedItems.map(({ item, barcode, qty, uom }) => (
-            <tr key={barcode}>
-              <td className="border border-gray-300 px-2 py-1">{item}</td>
-              <td className="border border-gray-300 px-2 py-1">{barcode}</td>
-              <td className="border border-gray-300 px-2 py-1 text-center">{qty}</td>
-              <td className="border border-gray-300 px-2 py-1">{uom}</td>
-              <td className="border border-gray-300 px-2 py-1 text-center">
-                <button
-                  type="button"
-                  onClick={() => removeBorrowItem(barcode)}
-                  className="text-red-600 hover:text-red-800 font-bold"
-                  title="Remove item"
-                >
-                  &times;
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          <div className="mt-6">
+            <label htmlFor="searchProduct" className="block font-semibold text-sm mb-1">
+              Search
+            </label>
+            <input
+              id="searchProduct"
+              type="text"
+              placeholder="Search item here"
+              className="w-full border border-gray-300 rounded px-3 py-2 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-orange-400"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
 
-    {/* Search and Add Products */}
-    <div className="mt-6">
-      <label htmlFor="searchProduct" className="block font-semibold text-sm mb-1">
-        Search
-      </label>
-      <input
-        id="searchProduct"
-        type="text"
-        placeholder="Search item here"
-        className="w-full border border-gray-300 rounded px-3 py-2 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-orange-400"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
+            <div className="overflow-x-auto max-h-60 border border-gray-300 rounded shadow-sm">
+              <table className="w-full text-xs border-collapse border border-gray-300">
+                <thead className="bg-gray-100 text-gray-600">
+                  <tr>
+                    <th className="border border-gray-300 px-2 py-1 text-left">Product Name</th>
+                    <th className="border border-gray-300 px-2 py-1 text-left">Barcode</th>
+                    <th className="border border-gray-300 px-2 py-1 text-center">Stock</th>
+                    <th className="border border-gray-300 px-2 py-1 text-left">Brand</th>
+                    <th className="border border-gray-300 px-2 py-1 text-left">UOM</th>
+                    <th className="border border-gray-300 px-2 py-1 text-center">Qty</th>
+                    <th className="border border-gray-300 px-2 py-1 text-center">Add</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {borrowProducts
+                    .filter(
+                      (product) =>
+                        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        product.barcode.toLowerCase().includes(searchTerm.toLowerCase())
+                    )
+                    .map((product) => (
+                      <tr key={product.barcode}>
+                        <td className="border border-gray-300 px-2 py-1">{product.name}</td>
+                        <td className="border border-gray-300 px-2 py-1">{product.barcode}</td>
+                        <td className="border border-gray-300 px-2 py-1 text-center">{product.stock}</td>
+                        <td className="border border-gray-300 px-2 py-1">{product.brand}</td>
+                        <td className="border border-gray-300 px-2 py-1">{product.uom}</td>
+                        <td className="border border-gray-300 px-2 py-1 text-center">
+                          <input
+                            type="number"
+                            min={1}
+                            value={productQtys[product.barcode] ?? 1}
+                            onChange={(e) => handleBorrowQtyChange(product.barcode, e.target.value)}
+                            className="w-16 text-center border border-gray-300 rounded px-1 py-0"
+                          />
+                        </td>
+                        <td className="border border-gray-300 px-2 py-1 text-center">
+                          <button
+                            type="button"
+                            onClick={() => addBorrowItem(product)}
+                            className="bg-orange-500 text-white px-2 rounded hover:bg-orange-600"
+                          >
+                            Add
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
 
-      <div className="overflow-x-auto max-h-60 border border-gray-300 rounded shadow-sm">
-        <table className="w-full text-xs border-collapse border border-gray-300">
-          <thead className="bg-gray-100 text-gray-600">
-            <tr>
-              <th className="border border-gray-300 px-2 py-1 text-left">Product Name</th>
-              <th className="border border-gray-300 px-2 py-1 text-left">Barcode</th>
-              <th className="border border-gray-300 px-2 py-1 text-center">Stock</th>
-              <th className="border border-gray-300 px-2 py-1 text-left">Brand</th>
-              <th className="border border-gray-300 px-2 py-1 text-left">UOM</th>
-              <th className="border border-gray-300 px-2 py-1 text-center">Qty</th>
-              <th className="border border-gray-300 px-2 py-1 text-center">Add</th>
-            </tr>
-          </thead>
-          <tbody>
-            {borrowProducts
-              .filter((product) =>
-                product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                product.barcode.toLowerCase().includes(searchTerm.toLowerCase())
-              )
-              .map((product) => {
-                let qty = 1;
-                return (
-                  <tr key={product.barcode}>
-                    <td className="border border-gray-300 px-2 py-1">{product.name}</td>
-                    <td className="border border-gray-300 px-2 py-1">{product.barcode}</td>
-                    <td className="border border-gray-300 px-2 py-1 text-center">{product.stock}</td>
-                    <td className="border border-gray-300 px-2 py-1">{product.brand}</td>
-                    <td className="border border-gray-300 px-2 py-1">{product.uom}</td>
+          <div className="mt-6">
+            <TextareaField
+              name="remarks"
+              label="Remarks"
+              value={borrowReserveData.remarks}
+              onChange={handleBorrowReserveChange}
+            />
+          </div>
+
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-6 py-2 bg-orange-600 text-white shadow-md border border-orange-600 cursor-pointer transition-colors duration-200 hover:bg-transparent hover:text-orange-600 disabled:opacity-50"
+            >
+              {loading ? "Submitting..." : "Submit"}
+            </button>
+          </div>
+        </form>
+      )}
+
+      {purpose === "warranty" && (
+        <form onSubmit={handleWarrantySubmit} className="bg-white p-6 rounded-xl shadow-lg space-y-6">
+          <div className="text-gray-700 font-semibold text-sm">FOR WARRANTY/REPLACEMENT</div>
+
+          <div className="flex flex-wrap gap-6 text-xs text-gray-700 font-semibold">
+            <div className="flex-1 min-w-[220px] flex flex-col">
+              <InputField
+                name="clientName"
+                label="Client Name *"
+                value={warrantyData.clientName}
+                onChange={handleWarrantyChange}
+              />
+            </div>
+
+            <div className="flex-1 min-w-[220px] flex flex-col">
+              <InputField
+                name="projectName"
+                label="Project Name *"
+                value={warrantyData.projectName}
+                onChange={handleWarrantyChange}
+              />
+            </div>
+
+            <div className="flex-1 min-w-[180px] flex flex-col">
+              <SelectField
+                name="itemType"
+                label="Item type *"
+                value={warrantyData.itemType}
+                onChange={handleWarrantyChange}
+                options={itemTypes}
+              />
+            </div>
+
+            <div className="flex-1 min-w-[180px] flex flex-col">
+              <InputField
+                name="itemSuppliedBy"
+                label="Item Supplied by *"
+                value={warrantyData.itemSuppliedBy}
+                onChange={handleWarrantyChange}
+              />
+            </div>
+
+            <div className="flex-1 min-w-[180px] flex flex-col">
+              <InputField
+                name="deliveryDate"
+                label="Delivery Date *"
+                type="date"
+                value={warrantyData.deliveryDate}
+                onChange={handleWarrantyChange}
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-6 text-xs text-gray-700 font-semibold">
+            {[
+              { name: "referenceNo", label: "Reference No." },
+              { name: "principalInvoice", label: "Principal Invoice" },
+              { name: "drNo", label: "DR No." },
+              { name: "warrantyClaimETA", label: "Warranty Claim ETA" },
+              { name: "replacementDate", label: "Replacement Date", type: "date" },
+            ].map(({ name, label, type }) => (
+              <div key={name} className="flex-1 min-w-[180px] flex flex-col">
+                <InputField
+                  name={name}
+                  label={label}
+                  type={type || "text"}
+                  value={warrantyData[name]}
+                  onChange={handleWarrantyChange}
+                />
+              </div>
+            ))}
+          </div>
+
+          <div className="overflow-x-auto max-h-60 border border-gray-300 rounded shadow-sm">
+            <table className="w-full border-collapse border border-gray-300 text-xs">
+              <thead>
+                <tr className="bg-gray-100 text-gray-600">
+                  <th className="border border-gray-300 px-2 py-1 text-left">ITEM</th>
+                  <th className="border border-gray-300 px-2 py-1 text-left">BARCODE</th>
+                  <th className="border border-gray-300 px-2 py-1 text-center">QTY</th>
+                  <th className="border border-gray-300 px-2 py-1 text-left">UOM</th>
+                  <th className="border border-gray-300 px-2 py-1 text-center">Remove</th>
+                </tr>
+              </thead>
+              <tbody>
+                {warrantyData.selectedItems.length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="text-center py-3 text-gray-500">
+                      No items added
+                    </td>
+                  </tr>
+                )}
+                {warrantyData.selectedItems.map(({ item, barcode, qty, uom }, idx) => (
+                  <tr key={idx}>
+                    <td className="border border-gray-300 px-2 py-1">
+                      <input
+                        type="text"
+                        value={item}
+                        onChange={(e) => handleWarrantyItemChange(idx, "item", e.target.value)}
+                        className="w-full text-xs border border-gray-300 rounded px-1 py-0"
+                      />
+                    </td>
+                    <td className="border border-gray-300 px-2 py-1">
+                      <input
+                        type="text"
+                        value={barcode}
+                        onChange={(e) => handleWarrantyItemChange(idx, "barcode", e.target.value)}
+                        className="w-full text-xs border border-gray-300 rounded px-1 py-0"
+                      />
+                    </td>
                     <td className="border border-gray-300 px-2 py-1 text-center">
                       <input
                         type="number"
                         min={1}
-                        defaultValue={1}
-                        className="w-16 text-center border border-gray-300 rounded px-1 py-0"
-                        onChange={(e) => {
-                          const val = parseInt(e.target.value, 10);
-                          qty = val > 0 ? val : 1;
-                        }}
+                        value={qty}
+                        onChange={(e) =>
+                          handleWarrantyItemChange(idx, "qty", Math.max(1, parseInt(e.target.value, 10) || 1))
+                        }
+                        className="w-12 text-center text-xs border border-gray-300 rounded px-1 py-0"
+                      />
+                    </td>
+                    <td className="border border-gray-300 px-2 py-1">
+                      <input
+                        type="text"
+                        value={uom}
+                        onChange={(e) => handleWarrantyItemChange(idx, "uom", e.target.value)}
+                        className="w-full text-xs border border-gray-300 rounded px-1 py-0"
                       />
                     </td>
                     <td className="border border-gray-300 px-2 py-1 text-center">
                       <button
                         type="button"
-                        onClick={() => addBorrowItem(product, qty)}
-                        className="bg-orange-500 text-white px-2 rounded hover:bg-orange-600"
+                        onClick={() => removeWarrantyItem(idx)}
+                        className="text-red-600 hover:text-red-800 font-bold"
+                        title="Remove item"
                       >
-                        Add
+                        &times;
                       </button>
                     </td>
                   </tr>
-                );
-              })}
-          </tbody>
-        </table>
-      </div>
-    </div>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-    <div className="mt-6">
-      <TextareaField
-        name="remarks"
-        label="Remarks"
-        value={borrowReserveData.remarks}
-        onChange={handleBorrowReserveChange}
-      />
-    </div>
+          <div className="mt-2">
+            <button
+              type="button"
+              onClick={addWarrantyItem}
+              className="bg-orange-500 text-white px-4 py-1 rounded hover:bg-orange-600"
+            >
+              + Add Item
+            </button>
+          </div>
 
-    <div className="flex justify-end">
-      <button
-        type="submit"
-        className="px-6 py-2 bg-orange-600 text-white 
-                       shadow-md border border-orange-600
-        cursor-pointer 
-        transition-colors duration-200 
-        hover:bg-transparent 
-        hover:text-orange-600"
-      >
-        Submit
-      </button>
-    </div>
-  </form>
-)}
+          <div className="mt-6">
+            <TextareaField
+              name="remarks"
+              label="Remarks"
+              value={warrantyData.remarks}
+              onChange={handleWarrantyChange}
+            />
+          </div>
 
+          <div className="mt-4">
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Attach File
+            </label>
+            <input
+              type="file"
+              onChange={handleWarrantyFileChange}
+              className="w-full text-sm text-gray-700 border border-gray-300 rounded px-3 py-2 cursor-pointer
+              file:mr-4 file:py-1 file:px-3 file:rounded file:border-0
+              file:text-sm file:font-semibold file:bg-orange-500 file:text-white
+              hover:file:bg-orange-600"
+            />
+          </div>
 
-      {/* Warranty Claim / Replacement Form */}
-{purpose === "warranty" && (
-  <form
-    onSubmit={handleWarrantySubmit}
-    className="bg-white p-6 rounded-xl shadow-lg space-y-6"
-  >
-    {/* Form Title / Section Label */}
-    <div className="text-gray-700 font-semibold text-sm">FOR WARRANTY/REPLACEMENT</div>
-
-    {/* First Row */}
-    <div className="flex flex-wrap gap-6 text-xs text-gray-700 font-semibold">
-      <div className="flex-1 min-w-55 flex flex-col">
-        <InputField
-          name="clientName"
-          label="Client Name *"
-          value={warrantyData.clientName}
-          onChange={handleWarrantyChange}
-        />
-      </div>
-
-      <div className="flex-1 min-w-55 flex flex-col">
-        <InputField
-          name="projectName"
-          label="Project Name"
-          value={warrantyData.projectName}
-          onChange={handleWarrantyChange}
-        />
-      </div>
-
-      <div className="flex-1 min-w-45 flex flex-col">
-        <SelectField
-          name="itemType"
-          label="Item type *"
-          value={warrantyData.itemType}
-          onChange={handleWarrantyChange}
-          options={itemTypes}
-        />
-      </div>
-
-      <div className="flex-1 min-w-45 flex flex-col">
-        <InputField
-          name="itemSuppliedBy"
-          label="Item Supplied by *"
-          value={warrantyData.itemSuppliedBy}
-          onChange={handleWarrantyChange}
-        />
-      </div>
-
-      <div className="flex-1 min-w-45 flex flex-col">
-        <InputField
-          name="deliveryDate"
-          label="Delivery Date *"
-          type="date"
-          value={warrantyData.deliveryDate}
-          onChange={handleWarrantyChange}
-        />
-      </div>
-    </div>
-
-    {/* Second Row */}
-    <div className="flex flex-wrap gap-6 text-xs text-gray-700 font-semibold">
-      {[
-        { name: "referenceNo", label: "Reference No." },
-        { name: "principalInvoice", label: "Principal Invoice" },
-        { name: "drNo", label: "DR No." },
-        { name: "warrantyClaimETA", label: "Warranty Claim ETA" },
-        { name: "replacementDate", label: "Replacement Date", type: "date" },
-      ].map(({ name, label, type }) => (
-        <div key={name} className="flex-1 min-w-45 flex flex-col">
-          <InputField
-            name={name}
-            label={label}
-            type={type || "text"}
-            value={warrantyData[name]}
-            onChange={handleWarrantyChange}
-          />
-        </div>
-      ))}
-    </div>
-
-    {/* Selected Items List */}
-    <div className="overflow-x-auto max-h-60 border border-gray-300 rounded shadow-sm">
-      <table className="w-full border-collapse border border-gray-300 text-xs">
-        <thead>
-          <tr className="bg-gray-100 text-gray-600">
-            <th className="border border-gray-300 px-2 py-1 text-left">ITEM</th>
-            <th className="border border-gray-300 px-2 py-1 text-left">BARCODE</th>
-            <th className="border border-gray-300 px-2 py-1 text-center">QTY</th>
-            <th className="border border-gray-300 px-2 py-1 text-left">UOM</th>
-            <th className="border border-gray-300 px-2 py-1 text-center">Remove</th>
-          </tr>
-        </thead>
-        <tbody>
-          {warrantyData.selectedItems.length === 0 && (
-            <tr>
-              <td colSpan={5} className="text-center py-3 text-gray-500">
-                No items added
-              </td>
-            </tr>
-          )}
-          {warrantyData.selectedItems.map(({ item, barcode, qty, uom }, idx) => (
-            <tr key={idx}>
-              <td className="border border-gray-300 px-2 py-1">
-                <input
-                  type="text"
-                  value={item}
-                  onChange={(e) =>
-                    handleWarrantyItemChange(idx, "item", e.target.value)
-                  }
-                  className="w-full text-xs border border-gray-300 rounded px-1 py-0"
-                />
-              </td>
-              <td className="border border-gray-300 px-2 py-1">
-                <input
-                  type="text"
-                  value={barcode}
-                  onChange={(e) =>
-                    handleWarrantyItemChange(idx, "barcode", e.target.value)
-                  }
-                  className="w-full text-xs border border-gray-300 rounded px-1 py-0"
-                />
-              </td>
-              <td className="border border-gray-300 px-2 py-1 text-center">
-                <input
-                  type="number"
-                  min={1}
-                  value={qty}
-                  onChange={(e) =>
-                    handleWarrantyItemChange(idx, "qty", parseInt(e.target.value) || 1)
-                  }
-                  className="w-12 text-center text-xs border border-gray-300 rounded px-1 py-0"
-                />
-              </td>
-              <td className="border border-gray-300 px-2 py-1">
-                <input
-                  type="text"
-                  value={uom}
-                  onChange={(e) =>
-                    handleWarrantyItemChange(idx, "uom", e.target.value)
-                  }
-                  className="w-full text-xs border border-gray-300 rounded px-1 py-0"
-                />
-              </td>
-              <td className="border border-gray-300 px-2 py-1 text-center">
-                <button
-                  type="button"
-                  onClick={() => removeWarrantyItem(idx)}
-                  className="text-red-600 hover:text-red-800 font-bold"
-                  title="Remove item"
-                >
-                  &times;
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-
-    <div className="mt-2">
-      <button
-        type="button"
-        onClick={addWarrantyItem}
-        className="bg-orange-500 text-white px-4 py-1 rounded hover:bg-orange-600"
-      >
-        + Add Item
-      </button>
-    </div>
-
-    {/* Remarks */}
-<div className="mt-6">
-  <TextareaField
-    name="remarks"
-    label="Remarks"
-    value={warrantyData.remarks}
-    onChange={handleWarrantyChange}
-  />
-</div>
-
-{/* Attach File */}
-<div className="mt-4">
-  <label className="block text-sm font-semibold text-gray-700 mb-1">
-    Attach File
-  </label>
-  <input
-    type="file"
-    onChange={(e) => {
-      // Handle file upload, e.g., store in state
-      const file = e.target.files[0];
-      console.log(file); // replace with your handler
-    }}
-    className="w-full text-sm text-gray-700 border border-gray-300 rounded px-3 py-2 cursor-pointer
-               file:mr-4 file:py-1 file:px-3 file:rounded file:border-0
-               file:text-sm file:font-semibold file:bg-orange-500 file:text-white
-               hover:file:bg-orange-600"
-  />
-</div>
-
-{/* Submit Button */}
-<div className="flex justify-end mt-4">
-  <button
-    type="submit"
-    className="px-6 py-2 bg-orange-600 text-white 
-                       shadow-md border border-orange-600
-        cursor-pointer 
-        transition-colors duration-200 
-        hover:bg-transparent 
-        hover:text-orange-600"
-  >
-    Submit
-  </button>
-</div>
-
-  </form>
-)}
-
+          <div className="flex justify-end mt-4">
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-6 py-2 bg-orange-600 text-white shadow-md border border-orange-600 cursor-pointer transition-colors duration-200 hover:bg-transparent hover:text-orange-600 disabled:opacity-50"
+            >
+              {loading ? "Submitting..." : "Submit"}
+            </button>
+          </div>
+        </form>
+      )}
     </main>
   );
 }

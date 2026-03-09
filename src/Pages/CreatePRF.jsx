@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { PRFService } from "../services/prf.service";
 
 const CreatePRF = ({ onSubmit, startingPRFNo = 1000 }) => {
-  // startingPRFNo is a prop or default number for auto-increment demo
-
   const [prfNo, setPrfNo] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
   const [form, setForm] = useState({
     clientName: "",
     project: "",
@@ -25,12 +26,6 @@ const CreatePRF = ({ onSubmit, startingPRFNo = 1000 }) => {
     receivedBy: "",
   });
 
-  useEffect(() => {
-    // Simulate auto-increment PRF number on mount
-    // In real app, fetch last PRF from server/db and increment
-    setPrfNo(`PRF-${startingPRFNo}`);
-  }, [startingPRFNo]);
-
   const [itemInput, setItemInput] = useState({
     qty: "",
     brand: "",
@@ -38,7 +33,8 @@ const CreatePRF = ({ onSubmit, startingPRFNo = 1000 }) => {
     unitPrice: "",
   });
 
-  // Calculate amount per item and total
+  const currentDate = new Date().toISOString().slice(0, 10);
+
   const calculateAmount = (qty, unitPrice) => {
     const q = parseFloat(qty);
     const up = parseFloat(unitPrice);
@@ -46,11 +42,16 @@ const CreatePRF = ({ onSubmit, startingPRFNo = 1000 }) => {
     return q * up;
   };
 
-  const totalAmount = form.items.reduce((acc, item) => {
-    return acc + calculateAmount(item.qty, item.unitPrice);
-  }, 0);
+  const totalAmount = form.items.reduce(
+    (acc, item) => acc + calculateAmount(item.qty, item.unitPrice),
+    0
+  );
 
-  // Handlers
+  // UI-only auto PRF number (backend currently hindi pa tumatanggap prf_no sa store)
+  useEffect(() => {
+    setPrfNo(`PRF-${startingPRFNo}`);
+  }, [startingPRFNo]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setForm((f) => ({ ...f, [name]: value }));
@@ -62,16 +63,20 @@ const CreatePRF = ({ onSubmit, startingPRFNo = 1000 }) => {
   };
 
   const handleAddItem = () => {
-    // validate itemInput (qty and unitPrice numbers, description not empty)
     if (!itemInput.qty || !itemInput.description || !itemInput.unitPrice) {
       alert("Please fill qty, description and unit price for the item.");
       return;
     }
     setForm((f) => ({
       ...f,
-      items: [...f.items, { ...itemInput, amount: calculateAmount(itemInput.qty, itemInput.unitPrice) }],
+      items: [
+        ...f.items,
+        {
+          ...itemInput,
+          amount: calculateAmount(itemInput.qty, itemInput.unitPrice),
+        },
+      ],
     }));
-    // Reset item inputs
     setItemInput({ qty: "", brand: "", description: "", unitPrice: "" });
   };
 
@@ -82,19 +87,86 @@ const CreatePRF = ({ onSubmit, startingPRFNo = 1000 }) => {
     }));
   };
 
-  const currentDate = new Date().toISOString().slice(0, 10);
+  // Map React form → backend fields for PrfController@store
+  const mapToPayload = () => ({
+    client_name: form.clientName || null,
+    proj: form.project || null,
+    project_id: null,
+    pms_project: null,
+    item_type: form.itemType || null,
+    po_no: form.poNo || null,
+    total: totalAmount || null,
+    date_filed: currentDate,
+    date_needed: form.dateNeeded || null,
+    terms: form.terms || null,
+    shipping_ins: form.shippingInstructions || null,
+    deliver_to: form.deliverTo || null,
+    remarks: form.remarks || null,
+    // optionally override email used in store:
+    // prf_email: form.email || null,
+  });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!form.clientName || !form.project) {
       alert("Please fill Client Name and Project");
       return;
     }
-    onSubmit?.({ prfNo, date: currentDate, ...form });
+
+    if (form.items.length === 0) {
+      const ok = window.confirm(
+        "No items added yet. Continue submitting PRF header only?"
+      );
+      if (!ok) return;
+    }
+
+    const payload = mapToPayload();
+
+    try {
+      setSubmitting(true);
+      const saved = await PRFService.create(payload);
+      onSubmit?.(saved);
+      alert("PRF created successfully.");
+
+      // Optional: reset form after save
+      setForm({
+        clientName: "",
+        project: "",
+        poNo: "",
+        dateNeeded: "",
+        deliverTo: "",
+        shippingInstructions: "",
+        terms: "",
+        itemType: "",
+        email: "",
+        items: [],
+        remarks: "",
+        requestedBy: "Admin Enye /",
+        notedBy: "",
+        approvedBy: "",
+        checkedBy: "",
+        approvedByPL: "",
+        releasedBy: "",
+        receivedBy: "",
+      });
+      setItemInput({ qty: "", brand: "", description: "", unitPrice: "" });
+    } catch (error) {
+      console.error("PRF create error:", error);
+      alert(
+        error?.response?.data?.message ||
+          "Failed to create PRF. Please try again."
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white w-full max-w-5xl mx-auto rounded shadow-lg overflow-hidden mt-6">
+    <form
+      onSubmit={handleSubmit}
+      className="bg-white w-full max-w-5xl mx-auto rounded shadow-lg overflow-hidden mt-6"
+    >
       {/* Header */}
       <div className="flex justify-between items-center border-b px-4 py-3 sm:px-6">
         <h2 className="text-lg font-semibold">Create Purchase Requisition Form</h2>
@@ -114,11 +186,11 @@ const CreatePRF = ({ onSubmit, startingPRFNo = 1000 }) => {
           </h1>
         </div>
 
-  {/* PRF # on the right */}
-  <div className="flex items-center gap-2 justify-end">
-    <span className="font-semibold">PRF #:</span>
-    <span className="text-gray-700">{prfNo}</span>
-  </div>
+        {/* PRF # on the right */}
+        <div className="flex items-center gap-2 justify-end">
+          <span className="font-semibold">PRF #:</span>
+          <span className="text-gray-700">{prfNo}</span>
+        </div>
 
         {/* PRF Info */}
         <div>
@@ -127,62 +199,63 @@ const CreatePRF = ({ onSubmit, startingPRFNo = 1000 }) => {
               <label className="block font-semibold mb-1" htmlFor="clientName">
                 CLIENT NAME:
               </label>
-              <input type="text"
+              <input
+                type="text"
                 id="clientName"
                 name="clientName"
                 value={form.clientName}
                 onChange={handleInputChange}
-                rows={2}
                 required
-                className="w-full border border-gray-300 rounded px-3 py-2 resize-none"
+                className="w-full border border-gray-300 rounded px-3 py-2"
               />
             </div>
             <div>
               <label className="block font-semibold mb-1" htmlFor="project">
                 PROJECT:
               </label>
-              <input type="text"
+              <input
+                type="text"
                 id="project"
                 name="project"
                 value={form.project}
                 onChange={handleInputChange}
-                rows={2}
                 required
-                className="w-full border border-gray-300 rounded px-3 py-2 resize-none"
+                className="w-full border border-gray-300 rounded px-3 py-2"
               />
             </div>
             <div>
               <label className="block font-semibold mb-1" htmlFor="poNo">
                 P.O. #:
               </label>
-              <input type="text"
+              <input
+                type="text"
                 id="poNo"
                 name="poNo"
                 value={form.poNo}
                 onChange={handleInputChange}
-                rows={2}
-                className="w-full border border-gray-300 rounded px-3 py-2 resize-none"
+                className="w-full border border-gray-300 rounded px-3 py-2"
               />
             </div>
             <div>
-            <label className="block font-semibold mb-1" htmlFor="date">
-              DATE:
-            </label>
-            <input
-              type="date"
-              id="date"
-              name="date"
-              value={currentDate}
-              readOnly
-              className="w-full border border-gray-300 rounded px-3 py-2 bg-gray-100 cursor-not-allowed focus:outline-none"
-            />
-          </div>
+              <label className="block font-semibold mb-1" htmlFor="date">
+                DATE:
+              </label>
+              <input
+                type="date"
+                id="date"
+                name="date"
+                value={currentDate}
+                readOnly
+                className="w-full border border-gray-300 rounded px-3 py-2 bg-gray-100 cursor-not-allowed focus:outline-none"
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             <div>
               <label className="block font-semibold mb-1" htmlFor="dateNeeded">
-                DATE NEEDED: <span className="text-red-600 italic">(plus 1 day)</span>
+                DATE NEEDED:{" "}
+                <span className="text-red-600 italic">(plus 1 day)</span>
               </label>
               <input
                 type="date"
@@ -203,12 +276,14 @@ const CreatePRF = ({ onSubmit, startingPRFNo = 1000 }) => {
                 name="deliverTo"
                 value={form.deliverTo}
                 onChange={handleInputChange}
-                rows={2}
-                className="w-full border border-gray-300 rounded px-3 py-2 resize-none"
+                className="w-full border border-gray-300 rounded px-3 py-2"
               />
             </div>
             <div>
-              <label className="block font-semibold mb-1" htmlFor="shippingInstructions">
+              <label
+                className="block font-semibold mb-1"
+                htmlFor="shippingInstructions"
+              >
                 SHIPPING INSTRUCTIONS:
               </label>
               <input
@@ -217,8 +292,7 @@ const CreatePRF = ({ onSubmit, startingPRFNo = 1000 }) => {
                 name="shippingInstructions"
                 value={form.shippingInstructions}
                 onChange={handleInputChange}
-                rows={2}
-                className="w-full border border-gray-300 rounded px-3 py-2 resize-none"
+                className="w-full border border-gray-300 rounded px-3 py-2"
               />
             </div>
             <div>
@@ -231,32 +305,32 @@ const CreatePRF = ({ onSubmit, startingPRFNo = 1000 }) => {
                 name="terms"
                 value={form.terms}
                 onChange={handleInputChange}
-                rows={2}
-                className="w-full border border-gray-300 rounded px-3 py-2 resize-none"
+                className="w-full border border-gray-300 rounded px-3 py-2"
               />
             </div>
-            
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 mb-4">
             <div>
-  <label className="block font-semibold mb-1" htmlFor="itemType">
-    Item Type:
-  </label>
-  <select
-    id="itemType"
-    name="itemType"
-    value={form.itemType}
-    onChange={handleInputChange}
-    className="w-full border border-gray-300 rounded px-3 py-2"
-  >
-    <option value="">-- Select Item Type --</option>
-    <option value="Local item/s">Local item/s</option>
-    <option value="Imported Item/s">Imported Item/s</option>
-    <option value="Local and Imported Item/s">Local and Imported Item/s</option>
-    <option value="Other">Other</option>
-  </select>
-</div>
+              <label className="block font-semibold mb-1" htmlFor="itemType">
+                Item Type:
+              </label>
+              <select
+                id="itemType"
+                name="itemType"
+                value={form.itemType}
+                onChange={handleInputChange}
+                className="w-full border border-gray-300 rounded px-3 py-2"
+              >
+                <option value="">-- Select Item Type --</option>
+                <option value="Local item/s">Local item/s</option>
+                <option value="Imported Item/s">Imported Item/s</option>
+                <option value="Local and Imported Item/s">
+                  Local and Imported Item/s
+                </option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
             <div>
               <label className="block font-semibold mb-1" htmlFor="email">
                 Select Email:
@@ -270,7 +344,10 @@ const CreatePRF = ({ onSubmit, startingPRFNo = 1000 }) => {
                 placeholder="example@domain.com"
                 className="w-full border border-gray-300 rounded px-3 py-2"
               />
-              <p className="text-xs text-gray-500 mt-1">This email may be used as a reference for order tracking in the Enyecontrols App. If unsure, please leave it as is</p>
+              <p className="text-xs text-gray-500 mt-1">
+                This email may be used as a reference for order tracking in the
+                Enyecontrols App. If unsure, please leave it as is
+              </p>
             </div>
           </div>
         </div>
@@ -291,7 +368,10 @@ const CreatePRF = ({ onSubmit, startingPRFNo = 1000 }) => {
             <tbody>
               {form.items.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="border px-2 py-2 text-center text-gray-500">
+                  <td
+                    colSpan={6}
+                    className="border px-2 py-2 text-center text-gray-500"
+                  >
                     No items added yet.
                   </td>
                 </tr>
@@ -301,7 +381,9 @@ const CreatePRF = ({ onSubmit, startingPRFNo = 1000 }) => {
                   <td className="border px-2 py-1 text-center">{item.qty}</td>
                   <td className="border px-2 py-1">{item.brand}</td>
                   <td className="border px-2 py-1">{item.description}</td>
-                  <td className="border px-2 py-1 text-center">{item.unitPrice}</td>
+                  <td className="border px-2 py-1 text-center">
+                    {item.unitPrice}
+                  </td>
                   <td className="border px-2 py-1 text-center">
                     {calculateAmount(item.qty, item.unitPrice).toFixed(2)}
                   </td>
@@ -365,7 +447,10 @@ const CreatePRF = ({ onSubmit, startingPRFNo = 1000 }) => {
                   />
                 </td>
                 <td className="border px-2 py-1 text-center">
-                  {calculateAmount(itemInput.qty, itemInput.unitPrice).toFixed(2)}
+                  {calculateAmount(
+                    itemInput.qty,
+                    itemInput.unitPrice
+                  ).toFixed(2)}
                 </td>
                 <td className="border px-2 py-1 text-center">
                   <button
@@ -499,14 +584,10 @@ const CreatePRF = ({ onSubmit, startingPRFNo = 1000 }) => {
         <div className="flex flex-col sm:flex-row justify-end gap-2 mt-8">
           <button
             type="submit"
-            className="px-8 py-2 bg-orange-600 text-white 
-                       shadow-md border border-orange-600
-        cursor-pointer 
-        transition-colors duration-200 
-        hover:bg-transparent 
-        hover:text-orange-600"
+            disabled={submitting}
+            className="px-8 py-2 bg-orange-600 text-white shadow-md border border-orange-600 cursor-pointer transition-colors duration-200 hover:bg-transparent hover:text-orange-600 disabled:opacity-50"
           >
-            Submit
+            {submitting ? "Submitting..." : "Submit"}
           </button>
         </div>
       </div>

@@ -1,3 +1,4 @@
+// src/services/empreservelist.service.js
 import { api } from "../lib/api";
 
 const BASE = "/api/admin/stock-request1";
@@ -16,11 +17,22 @@ const unwrapItem = (res) => {
 
 export const EmpReserveListService = {
   async list(params = {}) {
-    const res = await api.get(BASE, { params });
+    const res = await api.get(BASE, {
+      params: {
+        type: "reserve",
+        ...params,
+      },
+    });
     return unwrapList(res);
   },
+
   async show(id) {
     const res = await api.get(`${BASE}/${id}`);
+    return unwrapItem(res);
+  },
+
+  async update(id, payload) {
+    const res = await api.put(`${BASE}/${id}`, payload);
     return unwrapItem(res);
   },
 };

@@ -1,18 +1,25 @@
-// src/services/dispatch.service.js
 import { api } from "../lib/api";
 
-const BASE = "/api/admin/dispatches"; 
+const BASE = "/api/admin/dispatches";
 
 export const DispatchService = {
-  list: async ({ search = "", page = 1, perPage = 5 } = {}) => {
+  list: async ({
+    search = "",
+    page = 1,
+    perPage = 5,
+    warehouse = "",
+    mode = "",
+  } = {}) => {
     const res = await api.get(BASE, {
       params: {
         page,
-        per_page: perPage, // backend needs to read this if you implement it; paginate uses page by default [web:636]
+        per_page: perPage,
         ...(search ? { search } : {}),
+        ...(warehouse ? { warehouse } : {}),
+        ...(mode ? { mode } : {}),
       },
     });
-    return res.data; // paginator object
+    return res.data;
   },
 
   getById: async (id) => {
@@ -26,7 +33,7 @@ export const DispatchService = {
   },
 
   update: async (id, payload) => {
-    const res = await api.put(`${BASE}/${id}`, payload); // axios.put(url, data) [web:932]
+    const res = await api.put(`${BASE}/${id}`, payload);
     return res.data;
   },
 

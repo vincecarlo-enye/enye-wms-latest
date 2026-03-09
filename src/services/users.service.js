@@ -1,5 +1,11 @@
-// src/services/users.service.js
 import { api } from "../lib/api";
+
+const BASE = "/api/admin/users";
+
+const unwrapItem = (res) => {
+  const data = res?.data;
+  return data?.data ?? data;
+};
 
 export const UsersService = {
   login: async ({ email, password }) => {
@@ -25,5 +31,31 @@ export const UsersService = {
   logoutLocal: () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+  },
+
+  // NEW: users index (with optional search & pagination)
+  async list(params = {}) {
+    const res = await api.get(BASE, { params });
+    return res.data; // expect Laravel paginator {data, current_page, last_page,...}
+  },
+
+  async show(id) {
+    const res = await api.get(`${BASE}/${id}`);
+    return unwrapItem(res);
+  },
+
+  async create(payload) {
+    const res = await api.post(BASE, payload);
+    return unwrapItem(res);
+  },
+
+  async update(id, payload) {
+    const res = await api.put(`${BASE}/${id}`, payload);
+    return unwrapItem(res);
+  },
+
+  async destroy(id) {
+    const res = await api.delete(`${BASE}/${id}`);
+    return res.data;
   },
 };

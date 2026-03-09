@@ -1,9 +1,21 @@
 // src/services/productslist.service.js
 import { api } from "../lib/api";
 
+function getProductBasePath() {
+  const warehouse = localStorage.getItem("activeWarehouse") || "main";
+  return warehouse === "cebu"
+    ? "/api/admin/cebu/products"
+    : "/api/admin/products";
+}
+
 export const ProductListService = {
-  list: async ({ search = "", category = "", page = 1, perPage = 10 } = {}) => {
-    const res = await api.get("/api/admin/products", {
+  list: async ({
+    search = "",
+    category = "",
+    page = 1,
+    perPage = 10,
+  } = {}) => {
+    const res = await api.get(getProductBasePath(), {
       params: {
         page,
         per_page: perPage,
@@ -14,30 +26,17 @@ export const ProductListService = {
     return res.data;
   },
 
-  outOfStock: async ({ search = "", category = "", page = 1, perPage = 10 } = {}) => {
-    const res = await api.get("/api/admin/products/out-of-stock", {
-      params: {
-        page,
-        per_page: perPage, // make consistent
-        ...(search ? { search } : {}),
-        ...(category ? { category } : {}),
-      },
-    });
-    return res.data;
-  },
+  getById: async (id) =>
+    (await api.get(`${getProductBasePath()}/${id}`)).data,
 };
 
 export const ProductService = {
-  generateBarcode: async () => (await api.get("/api/admin/products/generate-barcode")).data,
+  create: async (payload) =>
+    (await api.post(getProductBasePath(), payload)).data,
 
-  create: async (payload) => (await api.post("/api/admin/products", payload)).data,
+  update: async (id, payload) =>
+    (await api.patch(`${getProductBasePath()}/${id}`, payload)).data,
 
-  // VIEW
-  getById: async (id) => (await api.get(`/api/admin/products/${id}`)).data,
-
-  // UPDATE (PATCH)
-  update: async (id, payload) => (await api.patch(`/api/admin/products/${id}`, payload)).data,
-
-  // DELETE
-  remove: async (id) => (await api.delete(`/api/admin/products/${id}`)).data,
+  remove: async (id) =>
+    (await api.delete(`${getProductBasePath()}/${id}`)).data,
 };

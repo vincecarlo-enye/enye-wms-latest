@@ -1,6 +1,7 @@
+// src/services/EmpWarrantyList.service.js
 import { api } from "../lib/api";
 
-const BASE = "/api/admin/replacements"; 
+const BASE = "/api/admin/replacements";
 
 const unwrapList = (res) => {
   const data = res?.data;
@@ -19,8 +20,14 @@ export const EmpWarrantyListService = {
     const res = await api.get(BASE, { params });
     return unwrapList(res);
   },
+
   async show(id) {
     const res = await api.get(`${BASE}/${id}`);
+    return unwrapItem(res);
+  },
+
+  async update(id, payload) {
+    const res = await api.put(`${BASE}/${id}`, payload);
     return unwrapItem(res);
   },
 };

@@ -1,52 +1,98 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { useWarehouse } from "../context/WarehouseContext";
+import { LogsService } from "../services/logs.service";
 
-const activityData = [
-  { id: 1, name: "John Doe", activity: "Logged in", datetime: "Feb 24, 2026 - 10:30 AM" },
-  { id: 2, name: "Jane Smith", activity: "Updated profile information", datetime: "Feb 24, 2026 - 09:15 AM" },
-  { id: 3, name: "Michael Johnson", activity: "Created a new post", datetime: "Feb 23, 2026 - 04:45 PM" },
-  { id: 4, name: "Emily Davis", activity: "Logged out", datetime: "Feb 23, 2026 - 02:10 PM" },
-  { id: 5, name: "Chris Brown", activity: "Changed password", datetime: "Feb 22, 2026 - 06:22 PM" },
-  { id: 6, name: "Sarah Wilson", activity: "Uploaded a file", datetime: "Feb 22, 2026 - 01:10 PM" },
-  { id: 7, name: "David Lee", activity: "Deleted a comment", datetime: "Feb 21, 2026 - 11:40 AM" },
-  { id: 8, name: "Anna Taylor", activity: "Registered account", datetime: "Feb 21, 2026 - 08:15 AM" },
-  { id: 9, name: "Mark Anderson", activity: "Logged in", datetime: "Feb 20, 2026 - 07:55 PM" },
-  { id: 10, name: "Lisa Thomas", activity: "Updated settings", datetime: "Feb 20, 2026 - 03:30 PM" },
-];
+const ITEMS_PER_PAGE = 10;
 
-const ITEMS_PER_PAGE = 5;
+// helper para sa 1 ... 5 ... 10 style
+const getPaginationItems = (current, total) => {
+  if (total <= 7) {
+    return Array.from({ length: total }, (_, i) => i + 1);
+  }
+  if (current <= 3) {
+    return [1, 2, 3, 4, "...", total];
+  }
+  if (current >= total - 2) {
+    return [1, "...", total - 3, total - 2, total - 1, total];
+  }
+  return [1, "...", current - 1, current, current + 1, "...", total];
+};
 
 const ActivityLogs = () => {
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const { currentWarehouse } = useWarehouse();
 
+  const [logs, setLogs] = useState([]);
+  const [pagination, setPagination] = useState({
+    current_page: 1,
+    last_page: 1,
+    total: 0,
+  });
+  const [loading, setLoading] = useState(false);
+
+  const { currentWarehouse } = useWarehouse();
   const isCebu = currentWarehouse === "cebu";
 
-  // ── Theming ────────────────────────────────────────────────────────────────
-  const primaryText      = isCebu ? "text-purple-600"        : "text-orange-600";
-  const tableHeaderBg    = isCebu ? "bg-purple-600"          : "bg-orange-600";
-  const hoverRowBg       = isCebu ? "hover:bg-purple-50"     : "hover:bg-orange-50";
-  const searchBorder     = isCebu ? "border-purple-300"      : "border-orange-300";
-  const focusRing        = isCebu ? "focus:ring-purple-500 focus:border-purple-500" : "focus:ring-orange-500 focus:border-orange-500";
-  const paginationBorder = isCebu ? "border-purple-300 hover:bg-purple-100" : "border-orange-300 hover:bg-orange-100";
-  const paginationActive = isCebu ? "bg-purple-600 text-white border-purple-600" : "bg-orange-600 text-white border-orange-600";
+  const primaryText = isCebu ? "text-purple-600" : "text-orange-600";
+  const tableHeaderBg = isCebu ? "bg-purple-600" : "bg-orange-600";
+  const hoverRowBg = isCebu ? "hover:bg-purple-50" : "hover:bg-orange-50";
+  const searchBorder = isCebu ? "border-purple-300" : "border-orange-300";
+  const focusRing = isCebu
+    ? "focus:ring-purple-500 focus:border-purple-500"
+    : "focus:ring-orange-500 focus:border-orange-500";
+  const paginationBorder = isCebu
+    ? "border-purple-300 hover:bg-purple-100"
+    : "border-orange-300 hover:bg-orange-100";
+  const paginationActive = isCebu
+    ? "bg-purple-600 text-white border-purple-600"
+    : "bg-orange-600 text-white border-orange-600";
 
-  // Filtered Data
-  const filteredData = useMemo(() => {
-    return activityData.filter((item) =>
-      item.name.toLowerCase().includes(search.toLowerCase()) ||
-      item.activity.toLowerCase().includes(search.toLowerCase()) ||
-      item.datetime.toLowerCase().includes(search.toLowerCase())
-    );
-  }, [search]);
+  const fetchLogs = async () => {
+    try {
+      setLoading(true);
+      const res = await LogsService.list({
+        page: currentPage,
+        per_page: ITEMS_PER_PAGE,
+        search: search || undefined,
+      });
 
-  // Pagination Logic
-  const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const currentData = filteredData.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+      const rows = Array.isArray(res.data) ? res.data : res.data?.data || [];
 
-  const handlePageChange = (page) => setCurrentPage(page);
+      setLogs(
+        rows.map((row) => ({
+          id: row.id,
+          userId: row.userid || row.user_id || "",
+          activity: row.activity || "",
+          datetime: row.date || row.created_at || "",
+        }))
+      );
+
+      setPagination({
+        current_page: res.current_page ?? 1,
+        last_page: res.last_page ?? 1,
+        total: res.total ?? rows.length,
+      });
+    } catch (error) {
+      console.error("Fetch logs error:", error);
+      setLogs([]);
+      setPagination({ current_page: 1, last_page: 1, total: 0 });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchLogs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, search]);
+
+  const totalPages = pagination.last_page || 1;
+  const paginationItems = getPaginationItems(currentPage, totalPages);
+
+  const handlePageChange = (page) => {
+    if (!page || page === "..." || page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -72,23 +118,42 @@ const ActivityLogs = () => {
         <table className="min-w-full border border-gray-200">
           <thead className={`${tableHeaderBg} text-white`}>
             <tr>
-              <th className="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Name</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Activity</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Date & Time</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
+                User ID
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
+                Activity
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
+                Date & Time
+              </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {currentData.length > 0 ? (
-              currentData.map((log) => (
+            {loading ? (
+              <tr>
+                <td
+                  colSpan={3}
+                  className="text-center py-6 text-gray-500 text-sm"
+                >
+                  Loading logs...
+                </td>
+              </tr>
+            ) : logs.length > 0 ? (
+              logs.map((log) => (
                 <tr key={log.id} className={`${hoverRowBg} transition`}>
-                  <td className="px-6 py-4 font-medium text-gray-800">{log.name}</td>
+                  <td className="px-6 py-4 font-medium text-gray-800">
+                    {log.userId}
+                  </td>
                   <td className="px-6 py-4 text-gray-600">{log.activity}</td>
-                  <td className="px-6 py-4 text-gray-500 text-sm">{log.datetime}</td>
+                  <td className="px-6 py-4 text-gray-500 text-sm">
+                    {log.datetime}
+                  </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="3" className="text-center py-6 text-gray-500">
+                <td colSpan={3} className="text-center py-6 text-gray-500">
                   No activity found.
                 </td>
               </tr>
@@ -98,7 +163,7 @@ const ActivityLogs = () => {
       </div>
 
       {/* Pagination */}
-      {filteredData.length > ITEMS_PER_PAGE && (
+      {totalPages > 1 && (
         <div className="flex justify-end items-center mt-6 space-x-2">
           <button
             onClick={() => handlePageChange(currentPage - 1)}
@@ -108,20 +173,26 @@ const ActivityLogs = () => {
             Previous
           </button>
 
-          {[...Array(totalPages)].map((_, index) => {
-            const page = index + 1;
-            return (
+          {paginationItems.map((item, index) =>
+            item === "..." ? (
+              <span
+                key={`ellipsis-${index}`}
+                className="px-3 py-2 text-sm text-gray-500 select-none"
+              >
+                ...
+              </span>
+            ) : (
               <button
-                key={page}
-                onClick={() => handlePageChange(page)}
+                key={item}
+                onClick={() => handlePageChange(item)}
                 className={`px-4 py-2 text-sm font-medium rounded-md border ${
-                  currentPage === page ? paginationActive : paginationBorder
+                  currentPage === item ? paginationActive : paginationBorder
                 }`}
               >
-                {page}
+                {item}
               </button>
-            );
-          })}
+            )
+          )}
 
           <button
             onClick={() => handlePageChange(currentPage + 1)}

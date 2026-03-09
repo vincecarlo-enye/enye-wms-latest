@@ -35,6 +35,7 @@ import OutOfStock from "./Pages/OutOfStock";
 import Footer from "./Components/Footer";
 import { WarehouseProvider } from "./context/WarehouseContext";
 import TransferredItems from "./Pages/TransferredItems";
+import EditUser from "./Management/EditUser";
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -101,6 +102,7 @@ function App() {
             <Route path="/LocalPRF" element={<LocalPRF />} />
             <Route path="/EmployeePRF" element={<EmployeePRF />} />
             <Route path="/UserManagement" element={<UserManagement />} />
+             <Route path="/EditUser/:id" element={<EditUser />} />
             <Route path="/AddUser" element={<AddUser />} />
             <Route path="/ActivityLogs" element={<ActivityLogs />} />
             <Route path="/UserProfile" element={<UserProfile />} />

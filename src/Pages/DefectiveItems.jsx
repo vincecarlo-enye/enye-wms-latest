@@ -1,391 +1,408 @@
-import { useState, useMemo } from "react";
-import { Plus, Search, Pencil, ChevronLeft, ChevronRight, X, Tag, Layers, Clock, Edit3, Barcode } from "lucide-react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import DefectiveItem from "../assets/js/DefectiveItems.json";
+import { Edit, Eye, Trash2, Plus } from "lucide-react";
+import { useWarehouse } from "../context/WarehouseContext";
+import { CategoryService } from "../services/category.service";
+import { ProductListService, ProductService } from "../services/productslist.service";
+import AddProduct from "./AddProducts";
 
-// Icon mapping
-const icons = {
-  barcode: Barcode,
-  modelName: Tag,
-  quantity: Layers,
-  isItem: Tag,
-  dateArrival: Clock,
-  dateReported: Clock,
-  remarks: Edit3,
-};
+const ITEMS_PER_PAGE = 5;
 
-// Reusable InputField
-function InputField({ id, name, label, type = "text", value, onChange, disabled, min, step }) {
-  const Icon = icons[name] || Tag;
-  const hasValue = value !== "" && value !== undefined;
+const OutOfStock = () => {
+  const navigate = useNavigate();
+  const { currentWarehouse } = useWarehouse();
+  const isCebu = currentWarehouse === "cebu";
 
-  return (
-    <div className="relative flex items-center mb-3">
-      <div className="absolute left-0 h-full flex items-center">
-        <div className="bg-orange-500 h-full px-3 flex items-center rounded-l-lg">
-          <Icon size={18} className="text-white" />
-        </div>
-      </div>
+  const primaryText = isCebu ? "text-purple-600" : "text-orange-600";
+  const primaryBg = isCebu ? "bg-purple-600" : "bg-orange-600";
+  const primaryBorder = isCebu ? "border-purple-600" : "border-orange-600";
+  const hoverPrimaryText = isCebu ? "hover:text-purple-600" : "hover:text-orange-600";
+  const tableHeaderBg = isCebu ? "bg-purple-600" : "bg-orange-600";
+  const hoverRowBg = isCebu ? "hover:bg-purple-50" : "hover:bg-orange-50";
+  const tabActive = isCebu ? "text-purple-600" : "text-orange-600";
+  const tabHover = isCebu ? "hover:text-purple-600" : "hover:text-orange-600";
+  const tabUnderline = isCebu ? "bg-purple-600" : "bg-orange-600";
+  const searchBorder = isCebu ? "border-purple-300" : "border-orange-300";
+  const focusRing = isCebu
+    ? "focus:ring-purple-500 focus:border-purple-500"
+    : "focus:ring-orange-500 focus:border-orange-500";
+  const paginationBorder = isCebu
+    ? "border-purple-300 hover:bg-purple-100"
+    : "border-orange-300 hover:bg-orange-100";
+  const paginationActive = isCebu
+    ? "bg-purple-600 text-white border-purple-600"
+    : "bg-orange-600 text-white border-orange-600";
 
-      <input
-        id={id}
-        name={name}
-        type={type}
-        value={value}
-        onChange={onChange}
-        disabled={disabled}
-        min={min}
-        step={step}
-        placeholder=" "
-        className={`peer w-full pl-14 pr-4 py-2 border rounded-lg bg-gray-50 ${disabled ? "cursor-not-allowed bg-gray-100" : ""} focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent shadow-sm`}
-      />
-      <label
-        htmlFor={id}
-        className={`absolute left-14 text-gray-500 text-sm transition-all duration-200 bg-white px-1
-        ${hasValue ? "-top-2 text-gray-600 text-sm" : "top-2.5 text-gray-400 text-base"}
-        peer-focus:-top-2 peer-focus:text-gray-600 peer-focus:text-sm`}
-      >
-        {label}
-      </label>
-    </div>
-  );
-}
-
-// Reusable TextareaField
-function TextareaField({ id, name, label, value, onChange, rows = 4 }) {
-  const Icon = icons[name] || Tag;
-  const hasValue = value !== "" && value !== undefined;
-
-  return (
-    <div className="relative flex items-start mb-3">
-      <div className="absolute left-0 inset-y-0 flex items-center">
-        <div className="bg-orange-500 h-full px-3 flex items-center rounded-l-lg">
-          <Icon size={18} className="text-white" />
-        </div>
-      </div>
-
-      <textarea
-        id={id}
-        name={name}
-        rows={rows}
-        value={value}
-        onChange={onChange}
-        placeholder=" "
-        className="peer w-full pl-14 pr-4 py-2 border rounded-lg bg-gray-50 resize-none focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent shadow-sm"
-      />
-
-      <label
-        htmlFor={id}
-        className={`absolute left-14 text-gray-500 text-sm transition-all duration-200 bg-white px-1
-        ${hasValue ? "-top-2 text-gray-600 text-sm" : "top-2.5 text-gray-400 text-base"}
-        peer-focus:-top-2 peer-focus:text-gray-600 peer-focus:text-sm`}
-      >
-        {label}
-      </label>
-    </div>
-  );
-}
-
-// Reusable SelectField
-function SelectField({ id, name, label, value, onChange, options }) {
-  const Icon = icons[name] || Tag;
-  const hasValue = value !== "" && value !== undefined;
-
-  return (
-    <div className="relative flex items-center mb-3">
-      <div className="absolute left-0 h-full flex items-center">
-        <div className="bg-orange-500 h-full px-3 flex items-center rounded-l-lg">
-          <Icon size={18} className="text-white" />
-        </div>
-      </div>
-
-      <select
-        id={id}
-        name={name}
-        value={value}
-        onChange={onChange}
-        className="peer w-full pl-14 pr-4 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent shadow-sm"
-      >
-        {options.map((opt, idx) => (
-          <option key={idx} value={opt.value ?? opt}>
-            {opt.label ?? opt}
-          </option>
-        ))}
-      </select>
-
-      <label
-        htmlFor={id}
-        className={`absolute left-14 text-gray-500 text-sm transition-all duration-200 bg-white px-1
-        ${hasValue ? "-top-2 text-gray-600 text-sm" : "top-2.5 text-gray-400 text-base"}
-        peer-focus:-top-2 peer-focus:text-gray-600 peer-focus:text-sm`}
-      >
-        {label}
-      </label>
-    </div>
-  );
-}
-
-// Main Component
-export default function DefectiveItems() {
+  const [menuItems, setMenuItems] = useState([]);
+  const [activeMenu, setActiveMenu] = useState(null);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [items, setItems] = useState(DefectiveItem);
-  const [editingItem, setEditingItem] = useState(null);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [newItem, setNewItem] = useState({
-    barcode: "",
-    modelName: "",
-    quantity: 1,
-    isItem: "with D.R. #",
-    dateArrival: "",
-    dateReported: "",
-    remarks: "",
-  });
+  const [outOfStockItems, setOutOfStockItems] = useState([]);
+  const [totalItems, setTotalItems] = useState(0);
+  const [lastPage, setLastPage] = useState(1);
 
-  const itemsPerPage = 5;
-  const Navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState("create");
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
-  // Filter items based on search
-  const filteredItems = useMemo(
-    () =>
-      items.filter((item) =>
-        Object.values(item)
-          .join(" ")
-          .toLowerCase()
-          .includes(search.toLowerCase())
-      ),
-    [items, search]
-  );
-
-  const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
-  const paginatedItems = filteredItems.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-  const handleSaveEdit = () => {
-    if (editingItem?.index === undefined) return;
-    const updated = [...items];
-    updated[editingItem.index] = { ...editingItem };
-    setItems(updated);
-    setEditingItem(null);
+  const getNonEmptyValue = (...values) => {
+    for (const value of values) {
+      if (value !== null && value !== undefined && value !== "") {
+        return value;
+      }
+    }
+    return null;
   };
 
-  const handleSaveNewItem = () => {
-    setItems([...items, newItem]);
-    setShowAddModal(false);
-    setNewItem({
-      barcode: "",
-      modelName: "",
-      quantity: 1,
-      isItem: "with D.R. #",
-      dateArrival: "",
-      dateReported: "",
-      remarks: "",
-    });
+  const toSafeNumber = (value) => {
+    if (value === null || value === undefined || value === "") return null;
+    const parsed = parseFloat(value);
+    return Number.isNaN(parsed) ? null : parsed;
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const data = await CategoryService.list({ page: 1, perPage: 1000 });
+
+      const rows = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.data)
+        ? data.data
+        : [];
+
+      const mapped = rows
+        .map((item) => item.category ?? item.name ?? item.category_name ?? "")
+        .filter(Boolean);
+
+      setMenuItems(mapped);
+    } catch (err) {
+      console.error("Error fetching categories:", err);
+      setMenuItems([]);
+    }
+  };
+
+  const fetchOutOfStock = async () => {
+    try {
+      const data = await ProductListService.outOfStock({
+        search,
+        category: activeMenu || "",
+        page: currentPage,
+        perPage: ITEMS_PER_PAGE,
+      });
+
+      setOutOfStockItems(data?.data || []);
+      setTotalItems(data?.total || 0);
+      setLastPage(data?.last_page || 1);
+    } catch (err) {
+      console.error("Error fetching out-of-stock products:", err);
+      setOutOfStockItems([]);
+      setTotalItems(0);
+      setLastPage(1);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, [currentWarehouse]);
+
+  useEffect(() => {
+    fetchOutOfStock();
+  }, [activeMenu, search, currentPage, currentWarehouse]);
+
+  const handleAddProduct = async () => {
+    setIsModalOpen(false);
+    setSelectedProduct(null);
+    setModalMode("create");
+    await fetchOutOfStock();
+  };
+
+  const handleUpdatedProduct = async () => {
+    setIsModalOpen(false);
+    setSelectedProduct(null);
+    setModalMode("create");
+    await fetchOutOfStock();
+  };
+
+  const handleView = (product) => {
+    setSelectedProduct(product);
+    setModalMode("view");
+    setIsModalOpen(true);
+  };
+
+  const handleEdit = (product) => {
+    setSelectedProduct(product);
+    setModalMode("edit");
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this product?")) return;
+
+    try {
+      await ProductService.remove(id);
+      await fetchOutOfStock();
+    } catch (err) {
+      console.error("Error deleting product:", err);
+    }
+  };
+
+  const totalPages = lastPage || Math.ceil(totalItems / ITEMS_PER_PAGE);
+
+  const getPagination = () => {
+    const pages = [];
+    const maxButtons = 5;
+    let start = Math.max(1, currentPage - 2);
+    let end = Math.min(totalPages, start + maxButtons - 1);
+
+    if (end - start < maxButtons - 1) {
+      start = Math.max(1, end - maxButtons + 1);
+    }
+
+    for (let i = start; i <= end; i++) pages.push(i);
+    return pages;
   };
 
   return (
-    <main className="flex-1 p-4 sm:p-6 bg-gray-50 min-h-screen">
+    <div className="min-h-screen bg-gray-50 p-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
-        <div>
-          <h2 className="text-2xl font-bold text-orange-600">Defective Items</h2>
-          <p className="text-gray-500 text-sm">Manage your defective products</p>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-2">
+        <h1 className={`text-3xl font-bold ${primaryText}`}>Out of Stock Items</h1>
+
+        <div className="flex gap-2 flex-wrap">
+          <button
+            onClick={() => navigate("/StockItems")}
+            className={`${primaryBg} text-white px-4 py-2 border ${primaryBorder} hover:bg-transparent ${hoverPrimaryText} cursor-pointer transition`}
+          >
+            Stocks List
+          </button>
+
+          <button
+            onClick={() => {
+              setModalMode("create");
+              setSelectedProduct(null);
+              setIsModalOpen(true);
+            }}
+            className="bg-green-600 text-white px-4 py-2 border border-green-600 hover:bg-transparent hover:text-green-600 transition flex items-center gap-2"
+          >
+            <Plus size={16} />
+            Add Product
+          </button>
         </div>
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="flex items-center gap-2 bg-orange-600 text-white px-4 py-2 cursor-pointer border border-orange-600 hover:bg-transparent hover:text-orange-600 transition"
-        >
-          <Plus size={18} /> Add Defective Item
-        </button>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        {menuItems.map((item) => {
+          const isActive = activeMenu === item;
+
+          return (
+            <button
+              key={item}
+              onClick={() => {
+                setActiveMenu(isActive ? null : item);
+                setCurrentPage(1);
+              }}
+              className={`relative px-4 py-2 font-medium text-gray-600 cursor-pointer group ${isActive ? tabActive : tabHover}`}
+            >
+              {item}
+              <span
+                className={`absolute left-0 bottom-0 h-0.5 ${tabUnderline} transition-all duration-300 ${
+                  isActive ? "w-full" : "w-0 group-hover:w-full"
+                }`}
+              />
+            </button>
+          );
+        })}
       </div>
 
       {/* Search */}
-      <div className="mb-4 max-w-md">
-        <div className="relative">
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setCurrentPage(1);
-            }}
-            placeholder="Search model or barcode..."
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg pr-10 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
-          />
-          <Search size={18} className="absolute right-3 top-2.5 text-gray-400" />
-        </div>
+      <div className="flex justify-end mb-4">
+        <input
+          type="text"
+          placeholder="Search..."
+          className={`px-4 py-2 border ${searchBorder} rounded-lg focus:outline-none focus:ring-2 ${focusRing} transition w-full md:w-64`}
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setCurrentPage(1);
+          }}
+        />
       </div>
 
-      {/* Desktop Table */}
-      <div className="hidden md:block bg-white rounded-lg shadow overflow-hidden">
-        <div className="grid grid-cols-[2fr_2fr_1fr_2fr_2fr_2fr_1fr] bg-orange-600 text-white text-sm font-semibold uppercase px-4 py-2">
-          <div>Model Name</div>
-          <div>Barcode</div>
-          <div>Quantity</div>
-          <div>Date Arrival Replace</div>
-          <div>Date Reported</div>
-          <div>Remarks</div>
-          <div>Action</div>
-        </div>
-        <div className="divide-y divide-gray-200">
-          {paginatedItems.length > 0 ? (
-            paginatedItems.map((item, idx) => (
-              <div
-                key={idx}
-                className="grid grid-cols-[2fr_2fr_1fr_2fr_2fr_2fr_1fr] px-4 py-3 hover:bg-orange-50 transition items-center"
-              >
-                <div>{item.modelName}</div>
-                <div>{item.barcode}</div>
-                <div>{item.quantity}</div>
-                <div>{item.dateArrival}</div>
-                <div>{item.dateReported}</div>
-                <div>{item.remarks}</div>
-                <div className="flex justify-center gap-2">
-                  <button
-                    onClick={() => setEditingItem({ ...item, index: idx })}
-                    className="text-blue-600 cursor-pointer hover:text-blue-800"
-                  >
-                    <Pencil size={16} />
-                  </button>
+      {/* Table */}
+      <div className="overflow-x-auto hidden md:block">
+        <table className="min-w-full border border-gray-200">
+          <thead className={`${tableHeaderBg} text-white`}>
+            <tr>
+              <th className="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">ID</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Model Name</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Description</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Quantity</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Manufacturer</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Buying Price</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Total Price</th>
+              <th className="px-6 py-3 text-center text-sm font-semibold uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody className="bg-white divide-y divide-gray-200">
+            {outOfStockItems.length > 0 ? (
+              outOfStockItems.map((item) => {
+                const quantityRaw = getNonEmptyValue(item.qty, item.barcode_qty);
+                const quantity = toSafeNumber(quantityRaw);
+                const buyPrice = toSafeNumber(item.buy_price);
+                const backendTotal = toSafeNumber(item.total_buy_price);
+
+                const computedTotal =
+                  buyPrice !== null && quantity !== null
+                    ? buyPrice * quantity
+                    : null;
+
+                const finalTotal =
+                  backendTotal !== null && backendTotal > 0
+                    ? backendTotal
+                    : computedTotal;
+
+                return (
+                  <tr key={item.prod_id} className={`${hoverRowBg} transition`}>
+                    <td className="px-6 py-4">{item.prod_id}</td>
+                    <td className="px-6 py-4">{item.prod_name}</td>
+                    <td className="px-6 py-4">{item.prod_desc}</td>
+                    <td className="px-6 py-4">{quantityRaw ?? "N/A"}</td>
+                    <td className="px-6 py-4">{item.manufacturer || "N/A"}</td>
+                    <td className="px-6 py-4">
+                      {buyPrice !== null ? `$${buyPrice.toFixed(2)}` : "N/A"}
+                    </td>
+                    <td className="px-6 py-4">
+                      {finalTotal !== null ? `$${finalTotal.toFixed(2)}` : "N/A"}
+                    </td>
+                    <td className="px-6 py-4 flex justify-center gap-3">
+                      <Edit
+                        className="h-5 w-5 text-blue-600 hover:text-blue-800 cursor-pointer"
+                        onClick={() => handleEdit(item)}
+                      />
+                      <Eye
+                        className="h-5 w-5 text-gray-600 hover:text-gray-900 cursor-pointer"
+                        onClick={() => handleView(item)}
+                      />
+                      <Trash2
+                        className="h-5 w-5 text-red-600 hover:text-red-800 cursor-pointer"
+                        onClick={() => handleDelete(item.prod_id)}
+                      />
+                    </td>
+                  </tr>
+                );
+              })
+            ) : (
+              <tr>
+                <td colSpan="8" className="text-center py-6 text-gray-500">
+                  No out-of-stock items found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Mobile */}
+      <div className="md:hidden space-y-4">
+        {outOfStockItems.length > 0 ? (
+          outOfStockItems.map((item) => {
+            const quantityRaw = getNonEmptyValue(item.qty, item.barcode_qty);
+            const quantity = toSafeNumber(quantityRaw);
+            const buyPrice = toSafeNumber(item.buy_price);
+            const backendTotal = toSafeNumber(item.total_buy_price);
+
+            const computedTotal =
+              buyPrice !== null && quantity !== null
+                ? buyPrice * quantity
+                : null;
+
+            const finalTotal =
+              backendTotal !== null && backendTotal > 0
+                ? backendTotal
+                : computedTotal;
+
+            return (
+              <div key={item.prod_id} className={`bg-white shadow rounded p-4 ${hoverRowBg} transition`}>
+                <div className="flex justify-between mb-2">
+                  <span className="font-semibold">Model:</span> {item.prod_name}
+                </div>
+                <div className="mb-1"><span className="font-semibold">Description:</span> {item.prod_desc}</div>
+                <div className="mb-1"><span className="font-semibold">Quantity:</span> {quantityRaw ?? "N/A"}</div>
+                <div className="mb-1"><span className="font-semibold">Manufacturer:</span> {item.manufacturer || "N/A"}</div>
+                <div className="mb-1"><span className="font-semibold">Buying Price:</span> {buyPrice !== null ? `$${buyPrice.toFixed(2)}` : "N/A"}</div>
+                <div className="mb-2"><span className="font-semibold">Total Price:</span> {finalTotal !== null ? `$${finalTotal.toFixed(2)}` : "N/A"}</div>
+                <div className="flex gap-3 justify-end">
+                  <Edit
+                    className="h-5 w-5 text-blue-600 hover:text-blue-800 cursor-pointer"
+                    onClick={() => handleEdit(item)}
+                  />
+                  <Eye
+                    className="h-5 w-5 text-gray-600 hover:text-gray-900 cursor-pointer"
+                    onClick={() => handleView(item)}
+                  />
+                  <Trash2
+                    className="h-5 w-5 text-red-600 hover:text-red-800 cursor-pointer"
+                    onClick={() => handleDelete(item.prod_id)}
+                  />
                 </div>
               </div>
-            ))
-          ) : (
-            <div className="text-center py-6 text-gray-500 col-span-7">No defective items found.</div>
-          )}
-        </div>
-      </div>
-
-      {/* Mobile Cards */}
-      <div className="md:hidden space-y-4">
-        {paginatedItems.length > 0 ? (
-          paginatedItems.map((item, idx) => (
-            <div key={idx} className="bg-white shadow rounded p-4 hover:bg-orange-50 transition space-y-1">
-              <div>
-                <span className="font-semibold">Model:</span> {item.modelName}
-              </div>
-              <div>
-                <span className="font-semibold">Barcode:</span> {item.barcode}
-              </div>
-              <div>
-                <span className="font-semibold">Quantity:</span> {item.quantity}
-              </div>
-              <div>
-                <span className="font-semibold">Date Arrival:</span> {item.dateArrival}
-              </div>
-              <div>
-                <span className="font-semibold">Date Reported:</span> {item.dateReported}
-              </div>
-              <div>
-                <span className="font-semibold">Remarks:</span> {item.remarks}
-              </div>
-              <div className="flex justify-end gap-2">
-                <button
-                  onClick={() => setEditingItem({ ...item, index: idx })}
-                  className="text-blue-600 hover:text-blue-800"
-                >
-                  <Pencil size={16} />
-                </button>
-              </div>
-            </div>
-          ))
+            );
+          })
         ) : (
-          <div className="text-center py-6 text-gray-500">No defective items found.</div>
+          <div className="text-center py-6 text-gray-500">No out-of-stock items found.</div>
         )}
       </div>
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex justify-end items-center mt-4 gap-2 flex-wrap">
+        <div className="flex flex-wrap justify-end items-center mt-6 space-x-2">
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
-            className="px-3 py-1 rounded border hover:bg-gray-100 disabled:opacity-50"
+            className={`px-4 py-2 text-sm font-medium border rounded-md disabled:opacity-50 ${paginationBorder}`}
           >
-            <ChevronLeft size={16} />
+            Previous
           </button>
-          {[...Array(totalPages)].map((_, idx) => (
+
+          {getPagination().map((page) => (
             <button
-              key={idx}
-              onClick={() => setCurrentPage(idx + 1)}
-              className={`px-3 py-1 rounded border ${
-                currentPage === idx + 1 ? "bg-orange-600 text-white border-orange-600" : "bg-white hover:bg-gray-100"
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              className={`px-4 py-2 text-sm font-medium rounded-md border ${
+                currentPage === page ? paginationActive : paginationBorder
               }`}
             >
-              {idx + 1}
+              {page}
             </button>
           ))}
+
           <button
             onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
             disabled={currentPage === totalPages}
-            className="px-3 py-1 rounded border hover:bg-gray-100 disabled:opacity-50"
+            className={`px-4 py-2 text-sm font-medium border rounded-md disabled:opacity-50 ${paginationBorder}`}
           >
-            <ChevronRight size={16} />
+            Next
           </button>
         </div>
       )}
 
-      {/* Edit Modal */}
-      {editingItem && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg w-lg p-10 relative shadow-lg space-y-5">
-            <button
-              className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
-              onClick={() => setEditingItem(null)}
-            >
-              <X size={20} />
-            </button>
-            <h3 className="text-xl text-orange-600 font-bold mb-4">Edit Defective Item</h3>
-
-            <InputField id="edit-barcode" name="barcode" label="Barcode" value={editingItem.barcode} onChange={(e) => setEditingItem({ ...editingItem, barcode: e.target.value })} disabled />
-            <InputField id="edit-modelName" name="modelName" label="Model Name" value={editingItem.modelName} onChange={(e) => setEditingItem({ ...editingItem, modelName: e.target.value })} disabled />
-            <InputField id="edit-quantity" name="quantity" label="Quantity" type="number" value={editingItem.quantity} onChange={(e) => setEditingItem({ ...editingItem, quantity: e.target.value })} disabled />
-            <InputField id="edit-dateArrival" name="dateArrival" label="Date Arrival" value={editingItem.dateArrival} onChange={(e) => setEditingItem({ ...editingItem, dateArrival: e.target.value })} />
-            <InputField id="edit-dateReported" name="dateReported" label="Date Reported" value={editingItem.dateReported} onChange={(e) => setEditingItem({ ...editingItem, dateReported: e.target.value })} />
-            <TextareaField id="edit-remarks" name="remarks" label="Remarks" value={editingItem.remarks} onChange={(e) => setEditingItem({ ...editingItem, remarks: e.target.value })} />
-
-            <div className="flex justify-end gap-2">
-              <button onClick={() => setEditingItem(null)} className="px-4 py-2 bg-gray-600 text-white cursor-pointer border border-gray-600 hover:bg-transparent hover:text-gray-600">
-                Cancel
-              </button>
-              <button onClick={handleSaveEdit} className="px-4 py-2 bg-orange-600 text-white cursor-pointer border border-orange-600 hover:bg-transparent hover:text-orange-600">
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Add Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg w-lg p-10 relative shadow-lg space-y-5">
-            <button className="absolute top-3 right-3 text-gray-400 hover:text-gray-600" onClick={() => setShowAddModal(false)}>
-              <X size={20} />
-            </button>
-            <h3 className="text-xl text-orange-600 font-bold mb-4">Add Defective Item</h3>
-
-            <InputField id="new-barcode" name="barcode" label="Barcode" value={newItem.barcode} onChange={(e) => setNewItem({ ...newItem, barcode: e.target.value })} />
-            <InputField id="new-modelName" name="modelName" label="Model Name" value={newItem.modelName} onChange={(e) => setNewItem({ ...newItem, modelName: e.target.value })} />
-            <InputField id="new-quantity" name="quantity" label="Quantity" type="number" value={newItem.quantity} onChange={(e) => setNewItem({ ...newItem, quantity: parseInt(e.target.value) })} />
-            <SelectField id="new-isItem" name="isItem" label="Is this Item?" value={newItem.isItem} onChange={(e) => setNewItem({ ...newItem, isItem: e.target.value })} options={["with D.R. #", "without D.R. #"]} />
-            <InputField id="new-dateArrival" name="dateArrival" label="Date Arrival Replace" value={newItem.dateArrival} onChange={(e) => setNewItem({ ...newItem, dateArrival: e.target.value })} />
-            <InputField id="new-dateReported" name="dateReported" label="Date Reported" value={newItem.dateReported} onChange={(e) => setNewItem({ ...newItem, dateReported: e.target.value })} />
-            <TextareaField id="new-remarks" name="remarks" label="Remarks" value={newItem.remarks} onChange={(e) => setNewItem({ ...newItem, remarks: e.target.value })} />
-
-            <div className="flex justify-end gap-2">
-              <button onClick={() => setShowAddModal(false)} className="px-4 py-2 bg-gray-600 text-white cursor-pointer border border-gray-600 hover:bg-transparent hover:text-gray-600">
-                Cancel
-              </button>
-              <button onClick={handleSaveNewItem} className="px-4 py-2 bg-orange-600 text-white cursor-pointer border border-orange-600 hover:bg-transparent hover:text-orange-600">
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </main>
+      <AddProduct
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedProduct(null);
+          setModalMode("create");
+        }}
+        onAddProduct={handleAddProduct}
+        onUpdatedProduct={handleUpdatedProduct}
+        warehouse={currentWarehouse}
+        mode={modalMode}
+        selectedProduct={selectedProduct}
+      />
+    </div>
   );
-}
+};
+
+export default OutOfStock;
