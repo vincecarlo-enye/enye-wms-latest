@@ -16,6 +16,10 @@ export const UsersService = {
   saveAuth: ({ user, token }) => {
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(user));
+
+    if (user?.warehouse) {
+      localStorage.setItem("activeWarehouse", user.warehouse);
+    }
   },
 
   getLocalUser: () => {
@@ -33,10 +37,9 @@ export const UsersService = {
     localStorage.removeItem("user");
   },
 
-  // NEW: users index (with optional search & pagination)
   async list(params = {}) {
     const res = await api.get(BASE, { params });
-    return res.data; // expect Laravel paginator {data, current_page, last_page,...}
+    return res.data;
   },
 
   async show(id) {

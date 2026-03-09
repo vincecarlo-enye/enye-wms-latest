@@ -8,7 +8,13 @@ import bg from "../../assets/images/bg.jpg";
 import engineerImg from "../../assets/images/engineer.png";
 
 /* ================= Animated Input Component ================= */
-function AnimatedInput({ label, type = "text", value, onChange }) {
+function AnimatedInput({
+  label,
+  type = "text",
+  value,
+  onChange,
+  onKeyDown,
+}) {
   const [focused, setFocused] = useState(false);
   const isActive = focused || value.length > 0;
 
@@ -18,6 +24,7 @@ function AnimatedInput({ label, type = "text", value, onChange }) {
         type={type}
         value={value}
         onChange={onChange}
+        onKeyDown={onKeyDown}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         onTouchStart={() => setFocused(true)}
@@ -50,17 +57,20 @@ function AnimatedInput({ label, type = "text", value, onChange }) {
 }
 
 /* ================= Animated Button Component ================= */
-function AnimatedButton({ children, onClick }) {
+function AnimatedButton({ children, onClick, disabled = false }) {
   const [hovered, setHovered] = useState(false);
 
   return (
     <button
       onClick={onClick}
+      disabled={disabled}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onTouchStart={() => setHovered(true)}
       onTouchEnd={() => setHovered(false)}
-      className="relative w-full h-12.5 rounded-sm border border-white overflow-hidden shadow-lg transition-all duration-300 cursor-pointer mt-2"
+      className={`relative w-full h-12.5 rounded-sm border border-white overflow-hidden shadow-lg transition-all duration-300 mt-2 ${
+        disabled ? "opacity-60 cursor-not-allowed" : "cursor-pointer"
+      }`}
     >
       <span
         className="absolute top-0 -left-2.5 h-full skew-x-15 transition-all duration-500 ease-in-out -z-10"
@@ -74,7 +84,7 @@ function AnimatedButton({ children, onClick }) {
 
       <span
         className="relative text-white text-[16px] font-medium transition-all duration-300"
-        style={{ color: hovered ? "black" : "white" }}
+        style={{ color: hovered && !disabled ? "black" : "white" }}
       >
         {children}
       </span>
@@ -83,13 +93,15 @@ function AnimatedButton({ children, onClick }) {
 }
 
 /* ================= Login Page ================= */
-
 export default function Login() {
   const images = [enyeBg, bg];
   const [current, setCurrent] = useState(0);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const navigate = useNavigate();
 
@@ -101,12 +113,18 @@ export default function Login() {
     return () => clearInterval(interval);
   }, []);
 
-  /* ===== LOGIN FUNCTION ===== */
-
   const handleLogin = async () => {
+    if (!email.trim() || !password.trim()) {
+      setErrorMessage("Please enter your email and password.");
+      return;
+    }
+
     try {
+      setLoading(true);
+      setErrorMessage("");
+
       const res = await UsersService.login({
-        email,
+        email: email.trim(),
         password,
       });
 
@@ -115,21 +133,41 @@ export default function Login() {
         token: res.token,
       });
 
+      const role =
+        res?.user?.role ||
+        res?.user?.roletype ||
+        res?.user?.type ||
+        "";
+
+      const warehouse =
+        res?.user?.warehouse ||
+        (String(role).toLowerCase().includes("cebu") ? "cebu" : "main");
+
+      localStorage.setItem("activeWarehouse", warehouse);
+
       navigate("/");
     } catch (err) {
-      console.error(err);
-      alert("Invalid email or password");
+      console.error("Login error:", err);
+      setErrorMessage(
+        err?.response?.data?.message || "Invalid email or password."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleLogin();
     }
   };
 
   return (
     <div className="w-full min-h-screen bg-black/80 backdrop-blur-sm flex">
-      
-      {/* LEFT SIDE - LOGIN FORM */}
-
-      <div className="w-full md:w-1/3 p-10 flex flex-col justify-between relative
-      bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-xl h-full">
-
+      <div
+        className="w-full md:w-1/3 p-10 flex flex-col justify-between relative
+        bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-xl h-full"
+      >
         <div className="flex justify-center mb-4">
           <img
             src={enyeControl}
@@ -139,22 +177,20 @@ export default function Login() {
         </div>
 
         <div className="flex flex-col justify-center flex-1 px-4">
-
           <div className="flex justify-center mb-8">
             <div className="w-28 h-28 flex items-center justify-center">
               <img src={engineerImg} alt="Engineer" />
             </div>
           </div>
 
-          <h2 className="text-white text-2xl mb-4">
-            Account Login
-          </h2>
+          <h2 className="text-white text-2xl mb-4">Account Login</h2>
 
           <AnimatedInput
             label="Email"
             type="text"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            onKeyDown={handleKeyDown}
           />
 
           <AnimatedInput
@@ -162,31 +198,30 @@ export default function Login() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={handleKeyDown}
           />
 
-          <AnimatedButton onClick={handleLogin}>
-            Sign in
+          {errorMessage && (
+            <p className="text-red-300 text-sm mt-1 mb-2">{errorMessage}</p>
+          )}
+
+          <AnimatedButton onClick={handleLogin} disabled={loading}>
+            {loading ? "Signing in..." : "Sign in"}
           </AnimatedButton>
 
           <div className="flex items-center gap-2 text-sm text-white/70 mt-4">
             <input type="checkbox" className="accent-orange-500" />
             <span>Remember me</span>
           </div>
-
         </div>
       </div>
-
-      {/* RIGHT SIDE */}
 
       <div
         className="hidden md:flex flex-1 relative overflow-hidden bg-cover transition-all duration-1000"
         style={{ backgroundImage: `url(${images[current]})` }}
       >
-
         <div className="absolute -bottom-20 -left-20 w-125 h-125 bg-orange-300 rounded-full blur-3xl opacity-40"></div>
-
         <div className="absolute top-20 right-0 w-100 h-100 bg-yellow-200 rounded-full blur-3xl opacity-40"></div>
-
         <div className="absolute bottom-0 right-20 w-75 h-75 bg-amber-100 rounded-full blur-3xl opacity-30"></div>
 
         <div className="absolute bottom-10 left-10 z-10">
@@ -195,9 +230,7 @@ export default function Login() {
             Warehouse.
           </h2>
         </div>
-
       </div>
-
     </div>
   );
 }
