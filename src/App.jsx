@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import Sidebar from "./Components/Sidebar";
 import Header from "./Components/Header";
 import WarehouseDashboard from "./Pages/WarehouseDashboard";
@@ -33,9 +33,9 @@ import UserProfile from "./Management/UserProfile";
 import Login from "./Management/Auth/Login";
 import OutOfStock from "./Pages/OutOfStock";
 import Footer from "./Components/Footer";
-import { WarehouseProvider } from "./context/WarehouseContext";
 import TransferredItems from "./Pages/TransferredItems";
 import EditUser from "./Management/EditUser";
+import ProtectedRoute from "./Components/ProtectedRoute";
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -56,61 +56,286 @@ function App() {
   }, []);
 
   const isLoginPage = location.pathname.toLowerCase() === "/login";
+  const isLoggedIn = !!localStorage.getItem("token");
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
       <div className="flex flex-1">
-        {/* Only show sidebar if not login */}
-        {!isLoginPage && (
+        {!isLoginPage && isLoggedIn && (
           <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
         )}
 
-        {/* Main content area */}
         <div
           className={`flex-1 flex flex-col transition-all duration-300 ${
-            !isLoginPage && sidebarOpen ? "lg:ml-64" : ""
+            !isLoginPage && isLoggedIn && sidebarOpen ? "lg:ml-64" : ""
           }`}
         >
-          {/* Only show header if not login */}
-          {!isLoginPage && <Header setSidebarOpen={setSidebarOpen} />}
+          {!isLoginPage && isLoggedIn && (
+            <Header setSidebarOpen={setSidebarOpen} />
+          )}
 
-          {/* Page content */}
           <Routes>
-            <Route path="/" element={<WarehouseDashboard />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/Categories" element={<Categories />} />
-            <Route path="/Pages/AddCategory" element={<AddCategory />} />
-            <Route path="/StockItems" element={<StockItems />} />
-            <Route path="/DefectiveItems" element={<DefectiveItems />} />
-            <Route path="/AddRestockItems" element={<AddRestockItems />} />
-            <Route path="/RestockedItems" element={<RestockedItems />} />
-            <Route path="/Deliver" element={<Deliver />} />
-            <Route path="/DeliverItems" element={<DeliverItems />} />
-            <Route path="/Transfer" element={<Transfer />} />
-            <Route path="/RequestForm" element={<RequestForm />} />
-            <Route path="/BorrowList" element={<BorrowList />} />
-            <Route path="/ReserveList" element={<ReserveList />} />
-            <Route path="/ReplacementList" element={<ReplacementList />} />
-            <Route path="/EmpBorrowList" element={<EmpBorrowList />} />
-            <Route path="/EmpReserveList" element={<EmpReserveList />} />
-            <Route path="/EmpWarrantyList" element={<EmpWarrantyList />} />
-            <Route path="/ProductWarranty" element={<ProductWarranty />} />
-            <Route path="/CreatePRF" element={<CreatePRF />} />
-            <Route path="/MyPRF" element={<MyPRF />} />
-            <Route path="/RequestedPRF" element={<RequestedPRF />} />
-            <Route path="/ImportedPRF" element={<ImportedPRF />} />
-            <Route path="/LocalPRF" element={<LocalPRF />} />
-            <Route path="/EmployeePRF" element={<EmployeePRF />} />
-            <Route path="/UserManagement" element={<UserManagement />} />
-             <Route path="/EditUser/:id" element={<EditUser />} />
-            <Route path="/AddUser" element={<AddUser />} />
-            <Route path="/ActivityLogs" element={<ActivityLogs />} />
-            <Route path="/UserProfile" element={<UserProfile />} />
-            <Route path="/OutOfStock" element={<OutOfStock />} />
-            <Route path="/TransferredItems" element={<TransferredItems />} />
+            <Route
+              path="/login"
+              element={isLoggedIn ? <Navigate to="/" replace /> : <Login />}
+            />
+
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <WarehouseDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/Categories"
+              element={
+                <ProtectedRoute>
+                  <Categories />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/Pages/AddCategory"
+              element={
+                <ProtectedRoute>
+                  <AddCategory />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/StockItems"
+              element={
+                <ProtectedRoute>
+                  <StockItems />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/DefectiveItems"
+              element={
+                <ProtectedRoute>
+                  <DefectiveItems />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/AddRestockItems"
+              element={
+                <ProtectedRoute>
+                  <AddRestockItems />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/RestockedItems"
+              element={
+                <ProtectedRoute>
+                  <RestockedItems />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/Deliver"
+              element={
+                <ProtectedRoute>
+                  <Deliver />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/DeliverItems"
+              element={
+                <ProtectedRoute>
+                  <DeliverItems />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/Transfer"
+              element={
+                <ProtectedRoute>
+                  <Transfer />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/RequestForm"
+              element={
+                <ProtectedRoute>
+                  <RequestForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/BorrowList"
+              element={
+                <ProtectedRoute>
+                  <BorrowList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/ReserveList"
+              element={
+                <ProtectedRoute>
+                  <ReserveList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/ReplacementList"
+              element={
+                <ProtectedRoute>
+                  <ReplacementList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/EmpBorrowList"
+              element={
+                <ProtectedRoute>
+                  <EmpBorrowList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/EmpReserveList"
+              element={
+                <ProtectedRoute>
+                  <EmpReserveList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/EmpWarrantyList"
+              element={
+                <ProtectedRoute>
+                  <EmpWarrantyList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/ProductWarranty"
+              element={
+                <ProtectedRoute>
+                  <ProductWarranty />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/CreatePRF"
+              element={
+                <ProtectedRoute>
+                  <CreatePRF />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/MyPRF"
+              element={
+                <ProtectedRoute>
+                  <MyPRF />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/RequestedPRF"
+              element={
+                <ProtectedRoute>
+                  <RequestedPRF />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/ImportedPRF"
+              element={
+                <ProtectedRoute>
+                  <ImportedPRF />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/LocalPRF"
+              element={
+                <ProtectedRoute>
+                  <LocalPRF />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/EmployeePRF"
+              element={
+                <ProtectedRoute>
+                  <EmployeePRF />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/UserManagement"
+              element={
+                <ProtectedRoute>
+                  <UserManagement />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/EditUser/:id"
+              element={
+                <ProtectedRoute>
+                  <EditUser />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/AddUser"
+              element={
+                <ProtectedRoute>
+                  <AddUser />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/ActivityLogs"
+              element={
+                <ProtectedRoute>
+                  <ActivityLogs />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/UserProfile"
+              element={
+                <ProtectedRoute>
+                  <UserProfile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/OutOfStock"
+              element={
+                <ProtectedRoute>
+                  <OutOfStock />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/TransferredItems"
+              element={
+                <ProtectedRoute>
+                  <TransferredItems />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="*"
+              element={<Navigate to={isLoggedIn ? "/" : "/login"} replace />}
+            />
           </Routes>
 
-          {!isLoginPage && <Footer />}
+          {!isLoginPage && isLoggedIn && <Footer />}
         </div>
       </div>
     </div>
