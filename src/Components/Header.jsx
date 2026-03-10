@@ -2,6 +2,7 @@ import { Menu, Bell, Settings, User, LogOut, Warehouse } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useWarehouse } from "../context/WarehouseContext";
+import { UsersService } from "../services/users.service";
 
 export default function Header({ setSidebarOpen }) {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -23,7 +24,26 @@ export default function Header({ setSidebarOpen }) {
   const handleNotificationsClick = () => alert("You have 3 new notifications!");
   const handleSettingsClick = () => alert("Redirecting to settings...");
   const handleProfileClick = () => navigate("/UserProfile");
-  const handleSignOutClick = () => alert("Signing out...");
+  const handleSignOutClick = async () => {
+  const confirmed = window.confirm("Are you sure you want to sign out?");
+  if (!confirmed) return;
+
+  try {
+    try {
+      await UsersService.logout();
+    } catch (error) {
+      console.error("Backend logout error:", error);
+    }
+
+    UsersService.logoutLocal();
+    navigate("/login", { replace: true });
+  } catch (error) {
+    console.error("Logout error:", error);
+    UsersService.logoutLocal();
+    navigate("/login", { replace: true });
+  }
+};
+
 
   return (
     <header className={`${headerBg} text-white p-3 flex items-center justify-between shadow-md transition-colors duration-300`}>

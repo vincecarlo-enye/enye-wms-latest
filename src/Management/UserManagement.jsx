@@ -45,15 +45,16 @@ const UserManagement = () => {
     return {
       id: row.id,
       userId: row.emp_id_no ? row.emp_id_no : `USR-${row.id}`,
-      firstName: row.first_name || row.firstname || first || "",
-      lastName: row.last_name || row.lastname || fallbackLast || "",
+      firstName: row.firstname ? row.firstname : first,
+      lastName: row.lastname ? row.lastname : fallbackLast,
       email: row.email || "",
-      mobileNumber: row.mobile_number || row.mobile || "",
-      landlineNumber: row.landline_number || row.landline || "",
-      userType: row.type || row.role_type || row.role || "",
+      mobileNumber: row.mobile || "",
+      landlineNumber: row.landline || "",
+      userType: row.role_type || row.type || row.role || "",
       raw: row,
     };
   };
+
 
   const fetchUsers = async () => {
     try {
@@ -91,12 +92,16 @@ const UserManagement = () => {
   const handleAddUser = async (newUser) => {
     try {
       const created = await UsersService.create({
-        // map AddUserModal fields -> backend fields
+        emp_id_no: newUser.userId || "",
         firstname: newUser.firstName,
         lastname: newUser.lastName,
+        username: newUser.username || newUser.email,
         email: newUser.email,
+        password: newUser.password,
+        dept_shname: newUser.department || "",
         mobile: newUser.mobileNumber,
         landline: newUser.landlineNumber,
+        notify_type: newUser.notifyType || "",
         role_type: newUser.userType,
       });
 
@@ -104,12 +109,19 @@ const UserManagement = () => {
       setIsAddUserOpen(false);
     } catch (error) {
       console.error("Create user error:", error);
-      alert(
-        error?.response?.data?.message ||
-          "Failed to create user. Please try again."
-      );
+      console.log("Validation response:", error?.response?.data);
+
+      const errors = error?.response?.data?.errors;
+      if (errors) {
+        const firstError = Object.values(errors)?.[0]?.[0];
+        alert(firstError || "Validation failed.");
+      } else {
+        alert(error?.response?.data?.message || "Failed to create user.");
+      }
     }
   };
+
+
 
   const handleDeleteUser = async (user) => {
     if (!window.confirm(`Delete user ${user.userId}?`)) return;
@@ -120,7 +132,7 @@ const UserManagement = () => {
       console.error("Delete user error:", error);
       alert(
         error?.response?.data?.message ||
-          "Failed to delete user. Please try again."
+        "Failed to delete user. Please try again."
       );
     }
   };
@@ -397,11 +409,10 @@ const UserManagement = () => {
                 <button
                   key={item}
                   onClick={() => handlePageChange(item)}
-                  className={`px-3 py-1 rounded border ${
-                    pagination.current_page === item
-                      ? "bg-orange-600 text-white border-orange-600"
-                      : "bg-white border-orange-300 hover:bg-orange-100"
-                  }`}
+                  className={`px-3 py-1 rounded border ${pagination.current_page === item
+                    ? "bg-orange-600 text-white border-orange-600"
+                    : "bg-white border-orange-300 hover:bg-orange-100"
+                    }`}
                 >
                   {item}
                 </button>

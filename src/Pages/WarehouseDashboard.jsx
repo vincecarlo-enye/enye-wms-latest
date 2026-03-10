@@ -205,6 +205,8 @@ export default function WarehouseDashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentWarehouse]);
 
+  
+
   const handleBarcodeSubmit = async (e) => {
     e.preventDefault();
     if (!barcode.trim()) return;

@@ -42,11 +42,10 @@ function AnimatedInput({
             style={{ transitionDelay: `${index * 50}ms` }}
             className={`inline-block text-lg transition-all duration-300
             ease-[cubic-bezier(0.68,-0.55,0.265,1.55)]
-            ${
-              isActive
+            ${isActive
                 ? "-translate-y-7 text-orange-400"
                 : "translate-y-0 text-white"
-            }`}
+              }`}
           >
             {char}
           </span>
@@ -68,9 +67,8 @@ function AnimatedButton({ children, onClick, disabled = false }) {
       onMouseLeave={() => setHovered(false)}
       onTouchStart={() => setHovered(true)}
       onTouchEnd={() => setHovered(false)}
-      className={`relative w-full h-12.5 rounded-sm border border-white overflow-hidden shadow-lg transition-all duration-300 mt-2 ${
-        disabled ? "opacity-60 cursor-not-allowed" : "cursor-pointer"
-      }`}
+      className={`relative w-full h-12.5 rounded-sm border border-white overflow-hidden shadow-lg transition-all duration-300 mt-2 ${disabled ? "opacity-60 cursor-not-allowed" : "cursor-pointer"
+        }`}
     >
       <span
         className="absolute top-0 -left-2.5 h-full skew-x-15 transition-all duration-500 ease-in-out -z-10"
@@ -115,46 +113,36 @@ export default function Login() {
 
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
-      setErrorMessage("Please enter your email and password.");
+      alert("Please enter your email and password.");
       return;
     }
 
     try {
-      setLoading(true);
-      setErrorMessage("");
-
       const res = await UsersService.login({
         email: email.trim(),
         password,
       });
 
-      UsersService.saveAuth({
-        user: res.user,
-        token: res.token,
-      });
+      console.log("LOGIN RESPONSE:", res);
 
-      const role =
-        res?.user?.role ||
-        res?.user?.roletype ||
-        res?.user?.type ||
-        "";
+      // adjust ito depende sa actual backend response
+      const token = res?.token || res?.access_token;
+      const user = res?.user || res?.data?.user || res?.data;
 
-      const warehouse =
-        res?.user?.warehouse ||
-        (String(role).toLowerCase().includes("cebu") ? "cebu" : "main");
+      if (!token || !user) {
+        alert("Login response is missing token or user data.");
+        return;
+      }
 
-      localStorage.setItem("activeWarehouse", warehouse);
+      UsersService.saveAuth({ user, token });
 
-      navigate("/");
+      navigate("/", { replace: true });
     } catch (err) {
       console.error("Login error:", err);
-      setErrorMessage(
-        err?.response?.data?.message || "Invalid email or password."
-      );
-    } finally {
-      setLoading(false);
+      alert(err?.response?.data?.message || "Invalid email or password");
     }
   };
+
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {

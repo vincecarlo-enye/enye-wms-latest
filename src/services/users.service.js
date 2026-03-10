@@ -17,9 +17,14 @@ export const UsersService = {
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(user));
 
-    if (user?.warehouse) {
-      localStorage.setItem("activeWarehouse", user.warehouse);
-    }
+    const role =
+      user?.role || user?.roletype || user?.type || "";
+
+    const warehouse =
+      user?.warehouse ||
+      (String(role).toLowerCase().includes("cebu") ? "cebu" : "main");
+
+    localStorage.setItem("activeWarehouse", warehouse);
   },
 
   getLocalUser: () => {
@@ -35,6 +40,7 @@ export const UsersService = {
   logoutLocal: () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    localStorage.removeItem("activeWarehouse");
   },
 
   async list(params = {}) {
